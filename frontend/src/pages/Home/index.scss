@@ -1,0 +1,133 @@
+.home-page {
+  min-height: 100svh;
+  color: var(--color-text);
+}
+
+.home-hero {
+  display: grid;
+  justify-items: center;
+  padding: 72px clamp(20px, 6vw, 80px) 52px;
+  text-align: center;
+  background:
+    linear-gradient(135deg, rgba(248, 250, 252, 0.95), rgba(240, 253, 250, 0.78)),
+    linear-gradient(45deg, rgba(255, 247, 237, 0.82), rgba(239, 246, 255, 0.86));
+
+  .ant-typography {
+    max-width: 760px;
+  }
+
+  h1.ant-typography {
+    margin: 16px 0;
+    color: var(--color-heading);
+    font-size: clamp(44px, 8vw, 84px);
+    line-height: 1.02;
+  }
+
+  p.ant-typography {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 18px;
+    line-height: 1.8;
+  }
+}
+
+.home-hero__mark {
+  display: grid;
+  width: 132px;
+  height: 132px;
+  place-items: center;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+
+  img {
+    width: 92px;
+    height: auto;
+  }
+}
+
+.home-hero__eyebrow.ant-typography {
+  margin-top: 24px;
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.home-hero__actions {
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.home-hero__tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.home-section {
+  padding: 48px clamp(20px, 6vw, 80px) 72px;
+  background: var(--color-page-bg);
+}
+
+.home-section__heading {
+  margin-bottom: 24px;
+
+  > .ant-typography {
+    color: var(--color-accent);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h2.ant-typography {
+    margin: 8px 0 0;
+    color: var(--color-heading);
+    font-size: clamp(28px, 4vw, 42px);
+  }
+}
+
+.home-section__grid {
+  display: grid;
+  gap: 16px;
+}
+
+.home-card.ant-card {
+  height: 100%;
+  border-radius: 8px;
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 16px 50px rgba(15, 23, 42, 0.06);
+
+  h3.ant-typography {
+    margin: 0 0 12px;
+    color: var(--color-heading);
+    font-size: 20px;
+  }
+
+  p.ant-typography {
+    margin: 0;
+    color: var(--color-muted);
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-hero {
+    padding-top: 48px;
+  }
+
+  .home-hero__mark {
+    width: 108px;
+    height: 108px;
+    border-radius: 24px;
+
+    img {
+      width: 76px;
+    }
+  }
+}
