@@ -9,7 +9,21 @@ import { router } from '@/router'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ConfigProvider locale={zhCN}>
+    <ConfigProvider
+      locale={zhCN}
+      theme={{
+        token: {
+          colorBgBase: 'var(--color-page-bg)',
+          colorBgContainer: 'var(--color-surface-strong)',
+          colorBorder: 'var(--color-line)',
+          colorLink: 'var(--color-primary)',
+          colorPrimary: 'var(--color-primary)',
+          colorText: 'var(--color-text)',
+          colorTextDescription: 'var(--color-muted)',
+          borderRadius: 8,
+        },
+      }}
+    >
       <RouterProvider router={router} />
     </ConfigProvider>
   </StrictMode>,

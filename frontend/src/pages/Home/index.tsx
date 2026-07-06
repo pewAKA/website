@@ -1,75 +1,84 @@
-import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
-import chunk from 'lodash/chunk'
+import { Link } from 'react-router'
 import heroImage from '@/assets/hero.png'
 import './index.scss'
 
-const { Title, Paragraph, Text } = Typography
+const stackTags = ['React', 'TypeScript', 'Vite', 'Sass', 'Ant Design', 'Axios', 'R3F']
 
-const focusItems = [
+const hubLinks = [
   {
     title: '项目作品',
-    description: '沉淀可展示的产品、工具与实验项目，让每一次迭代都有清晰记录。',
+    path: '/works',
+    label: 'Works',
+    description: '展示项目、工具和交互实验。',
   },
   {
     title: '技术文章',
-    description: '整理 React、TypeScript、工程化与三维交互相关的实践笔记。',
+    path: '/articles',
+    label: 'Notes',
+    description: '沉淀工程实践与技术观察。',
   },
   {
     title: '关于我',
-    description: '保留一块安静空间，介绍经历、技能栈、联系方式与当前关注方向。',
+    path: '/about',
+    label: 'Profile',
+    description: '放置经历、能力和联系方式。',
   },
   {
     title: '后续扩展',
-    description: '预留 3D 场景、后端接口、内容管理与多页面导航的演进位置。',
+    path: '/roadmap',
+    label: 'Roadmap',
+    description: '记录内容系统的下一步计划。',
   },
 ]
-
-const groupedFocusItems = chunk(focusItems, 2)
 
 function Home() {
   return (
     <div className="home-page">
       <section className="home-hero">
-        <div className="home-hero__mark" aria-hidden="true">
-          <img src={heroImage} alt="" />
+        <div className="home-hero__content">
+          <span className="home-hero__eyebrow">Personal knowledge hub</span>
+          <h1>Lynco Hub</h1>
+          <p>
+            一个安静但可扩展的个人内容中枢，用来整理项目作品、技术文章、个人信息和后续构想。
+          </p>
+
+          <div className="home-hero__actions">
+            <Link className="home-action home-action--primary" to="/works">
+              查看项目作品
+            </Link>
+            <Link className="home-action" to="/articles">
+              阅读技术文章
+            </Link>
+          </div>
+
+          <div className="home-hero__tags" aria-label="当前技术栈">
+            {stackTags.map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
         </div>
-        <Text className="home-hero__eyebrow">Personal Website Starter</Text>
-        <Title>个人网站</Title>
-        <Paragraph>
-          一个从零开始的前端基座，先把路由、请求、样式规范与组件体系铺好，再逐步长成完整的作品展示空间。
-        </Paragraph>
-        <Space className="home-hero__actions" wrap>
-          <Button type="primary" size="large" href="#works">
-            查看规划
-          </Button>
-          <Button size="large" href="#stack">
-            技术栈
-          </Button>
-        </Space>
-        <div className="home-hero__tags" id="stack">
-          {['React', 'TypeScript', 'Vite', 'Sass', 'Ant Design', 'Axios', 'R3F'].map((item) => (
-            <Tag key={item}>{item}</Tag>
-          ))}
+
+        <div className="home-hero__visual" aria-hidden="true">
+          <div className="home-hero__visual-frame">
+            <img src={heroImage} alt="" />
+            <span>Layered hub</span>
+          </div>
         </div>
       </section>
 
-      <section className="home-section" id="works">
-        <div className="home-section__heading">
-          <Text>Next Milestones</Text>
-          <Title level={2}>下一步可以展开的内容</Title>
+      <section className="home-directory">
+        <div className="home-directory__heading">
+          <span>Hub map</span>
+          <h2>内容入口</h2>
         </div>
-        <div className="home-section__grid">
-          {groupedFocusItems.map((group, groupIndex) => (
-            <Row key={groupIndex} gutter={[16, 16]}>
-              {group.map((item) => (
-                <Col key={item.title} xs={24} md={12}>
-                  <Card className="home-card" bordered>
-                    <Title level={3}>{item.title}</Title>
-                    <Paragraph>{item.description}</Paragraph>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
+
+        <div className="home-directory__grid">
+          {hubLinks.map((item) => (
+            <Link className="home-directory-card" key={item.path} to={item.path}>
+              <small>{item.label}</small>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </Link>
           ))}
         </div>
       </section>

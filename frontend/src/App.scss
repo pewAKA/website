@@ -1,4 +1,10 @@
 .app-shell {
+  position: relative;
   min-height: 100svh;
-  background: var(--color-page-bg);
+  overflow-x: hidden;
+  background:
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px),
+    linear-gradient(180deg, var(--color-grid) 1px, transparent 1px),
+    var(--color-page-bg);
+  background-size: 72px 72px;
 }

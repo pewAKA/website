@@ -1,13 +1,94 @@
+:root,
+html[data-theme='light'] {
+  color-scheme: light;
+  --color-page-bg: #f7f8fb;
+  --color-surface: rgba(255, 255, 255, 0.82);
+  --color-surface-muted: rgba(255, 255, 255, 0.62);
+  --color-surface-strong: rgba(255, 255, 255, 0.94);
+  --color-surface-clear: rgba(255, 255, 255, 0);
+  --color-heading: #0d1017;
+  --color-text: #252b33;
+  --color-muted: #667085;
+  --color-primary: #132a55;
+  --color-primary-soft: rgba(19, 42, 85, 0.09);
+  --color-primary-hover: rgba(19, 42, 85, 0.16);
+  --color-accent: #6e65d8;
+  --color-accent-soft: rgba(110, 101, 216, 0.14);
+  --color-line: rgba(13, 16, 23, 0.1);
+  --color-line-strong: rgba(13, 16, 23, 0.16);
+  --color-grid: rgba(13, 16, 23, 0.045);
+  --color-shadow: rgba(13, 16, 23, 0.12);
+  --color-shadow-soft: rgba(13, 16, 23, 0.06);
+  --color-on-primary: #ffffff;
+  --color-on-primary-muted: rgba(247, 248, 251, 0.74);
+}
+
+/* 默认跟随系统夜间偏好，html[data-theme] 可在后续交互中手动覆盖。 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-page-bg: #090b10;
+    --color-surface: rgba(18, 22, 31, 0.78);
+    --color-surface-muted: rgba(18, 22, 31, 0.58);
+    --color-surface-strong: rgba(25, 31, 44, 0.92);
+    --color-surface-clear: rgba(18, 22, 31, 0);
+    --color-heading: #f5f7fb;
+    --color-text: #d7dde8;
+    --color-muted: #9aa6b8;
+    --color-primary: #8da8ff;
+    --color-primary-soft: rgba(141, 168, 255, 0.14);
+    --color-primary-hover: rgba(141, 168, 255, 0.22);
+    --color-accent: #b1a6ff;
+    --color-accent-soft: rgba(177, 166, 255, 0.16);
+    --color-line: rgba(245, 247, 251, 0.12);
+    --color-line-strong: rgba(245, 247, 251, 0.2);
+    --color-grid: rgba(245, 247, 251, 0.055);
+    --color-shadow: rgba(0, 0, 0, 0.42);
+    --color-shadow-soft: rgba(0, 0, 0, 0.28);
+    --color-on-primary: #090b10;
+    --color-on-primary-muted: rgba(9, 11, 16, 0.68);
+  }
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --color-page-bg: #090b10;
+  --color-surface: rgba(18, 22, 31, 0.78);
+  --color-surface-muted: rgba(18, 22, 31, 0.58);
+  --color-surface-strong: rgba(25, 31, 44, 0.92);
+  --color-surface-clear: rgba(18, 22, 31, 0);
+  --color-heading: #f5f7fb;
+  --color-text: #d7dde8;
+  --color-muted: #9aa6b8;
+  --color-primary: #8da8ff;
+  --color-primary-soft: rgba(141, 168, 255, 0.14);
+  --color-primary-hover: rgba(141, 168, 255, 0.22);
+  --color-accent: #b1a6ff;
+  --color-accent-soft: rgba(177, 166, 255, 0.16);
+  --color-line: rgba(245, 247, 251, 0.12);
+  --color-line-strong: rgba(245, 247, 251, 0.2);
+  --color-grid: rgba(245, 247, 251, 0.055);
+  --color-shadow: rgba(0, 0, 0, 0.42);
+  --color-shadow-soft: rgba(0, 0, 0, 0.28);
+  --color-on-primary: #090b10;
+  --color-on-primary-muted: rgba(9, 11, 16, 0.68);
+}
+
 :root {
-  --color-page-bg: #f8fafc;
-  --color-surface: #ffffff;
-  --color-heading: #111827;
-  --color-text: #334155;
-  --color-muted: #64748b;
-  --color-accent: #0f766e;
+  --layout-max-width: 1120px;
+  --layout-content-inset: 40px;
+  --layout-card-gap: 16px;
+  --layout-hero-top: 132px;
+  --layout-page-top: 132px;
+  --layout-page-bottom: 72px;
+  --nav-offset: 24px;
+  --nav-width-inset: 32px;
+  --nav-panel-width: 360px;
+  --nav-control-size: 60px;
+  --nav-inner-control-size: 44px;
+  --nav-gap: 10px;
 
   font-family:
-    Inter,
     ui-sans-serif,
     system-ui,
     -apple-system,
@@ -22,6 +103,58 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media (max-width: 1199px) {
+  :root {
+    --layout-content-inset: 48px;
+    --layout-hero-top: 124px;
+    --layout-page-top: 124px;
+    --layout-page-bottom: 64px;
+  }
+}
+
+@media (max-width: 899px) {
+  :root {
+    --layout-content-inset: 40px;
+    --layout-card-gap: 14px;
+    --layout-hero-top: 118px;
+    --layout-page-top: 118px;
+    --nav-offset: 18px;
+    --nav-width-inset: 36px;
+    --nav-control-size: 60px;
+    --nav-inner-control-size: 44px;
+    --nav-panel-width: 340px;
+  }
+}
+
+@media (max-width: 639px) {
+  :root {
+    --layout-content-inset: 28px;
+    --layout-card-gap: 12px;
+    --layout-hero-top: 110px;
+    --layout-page-top: 112px;
+    --layout-page-bottom: 48px;
+    --nav-offset: 14px;
+    --nav-width-inset: 28px;
+    --nav-panel-width: 330px;
+    --nav-control-size: 60px;
+    --nav-inner-control-size: 44px;
+    --nav-gap: 8px;
+  }
+}
+
+@media (max-width: 374px) {
+  :root {
+    --layout-content-inset: 24px;
+    --layout-hero-top: 104px;
+    --layout-page-top: 106px;
+    --nav-offset: 10px;
+    --nav-width-inset: 20px;
+    --nav-control-size: 58px;
+    --nav-inner-control-size: 44px;
+    --nav-gap: 6px;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -34,6 +167,8 @@ body {
   min-width: 320px;
   min-height: 100svh;
   margin: 0;
+  background: var(--color-page-bg);
+  text-size-adjust: 100%;
 }
 
 a {
@@ -47,4 +182,13 @@ img {
 
 #root {
   min-height: 100svh;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent-soft);
+  outline-offset: 4px;
+}
+
+::selection {
+  background: var(--color-accent-soft);
 }

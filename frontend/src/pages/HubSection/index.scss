@@ -1,0 +1,157 @@
+.hub-section-page {
+  width: min(var(--layout-max-width), calc(100% - var(--layout-content-inset)));
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: var(--layout-page-top) 0 var(--layout-page-bottom);
+
+  &__intro {
+    max-width: 760px;
+
+    span {
+      color: var(--color-accent);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 18px 0 18px;
+      color: var(--color-heading);
+      font-size: 64px;
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--color-muted);
+      font-size: 18px;
+      line-height: 1.8;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--layout-card-gap);
+    margin-top: 48px;
+  }
+
+  &__footer {
+    margin-top: 18px;
+    padding: 20px 22px;
+    border: 1px solid var(--color-line);
+    border-radius: 8px;
+    background: var(--color-surface);
+
+    p {
+      margin: 0;
+      color: var(--color-muted);
+      line-height: 1.75;
+    }
+  }
+}
+
+.hub-section-card {
+  min-height: 230px;
+  padding: 24px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: 0 16px 44px var(--color-shadow-soft);
+
+  small {
+    color: var(--color-accent);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  h2 {
+    margin: 22px 0 12px;
+    color: var(--color-heading);
+    font-size: 24px;
+    line-height: 1.22;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-muted);
+    line-height: 1.75;
+  }
+}
+
+@media (max-width: 1199px) {
+  .hub-section-page {
+    &__intro {
+      h1 {
+        font-size: 56px;
+      }
+    }
+
+    &__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .hub-section-card {
+    min-height: 210px;
+  }
+}
+
+@media (max-width: 899px) {
+  .hub-section-page {
+    &__intro {
+      h1 {
+        font-size: 48px;
+      }
+    }
+
+    &__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+@media (max-width: 639px) {
+  .hub-section-page {
+    width: min(var(--layout-max-width), calc(100% - var(--layout-content-inset)));
+
+    &__intro {
+      h1 {
+        font-size: 38px;
+      }
+
+      p {
+        font-size: 16px;
+      }
+    }
+
+    &__grid {
+      grid-template-columns: 1fr;
+      margin-top: 36px;
+    }
+
+    &__footer {
+      padding: 18px 20px;
+    }
+  }
+
+  .hub-section-card {
+    min-height: auto;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 374px) {
+  .hub-section-page {
+    &__intro {
+      h1 {
+        font-size: 34px;
+      }
+
+      p {
+        font-size: 15px;
+      }
+    }
+  }
+}

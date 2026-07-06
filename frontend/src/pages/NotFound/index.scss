@@ -2,6 +2,10 @@
   display: grid;
   min-height: 100svh;
   place-items: center;
-  padding: 32px;
+  padding: var(--layout-content-inset);
   background: var(--color-page-bg);
+
+  .ant-result {
+    width: min(100%, 560px);
+  }
 }
