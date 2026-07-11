@@ -1,0 +1,11 @@
+services:
+  api:
+    build:
+      context: .
+    container_name: personal-website-api
+    # 共享宿主机网络，使应用安全访问原生 MySQL 的 127.0.0.1。
+    network_mode: host
+    env_file:
+      - .env
+    restart: unless-stopped
+
