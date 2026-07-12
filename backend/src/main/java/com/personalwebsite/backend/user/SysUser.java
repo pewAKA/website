@@ -11,6 +11,7 @@ public class SysUser {
     private String passwordHash;
     private String role;
     private Boolean enabled;
+    private Long tokenVersion;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -54,6 +55,14 @@ public class SysUser {
         this.enabled = enabled;
     }
 
+    public Long getTokenVersion() {
+        return tokenVersion;
+    }
+
+    public void setTokenVersion(Long tokenVersion) {
+        this.tokenVersion = tokenVersion;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -70,4 +79,3 @@ public class SysUser {
         this.updatedAt = updatedAt;
     }
 }
-

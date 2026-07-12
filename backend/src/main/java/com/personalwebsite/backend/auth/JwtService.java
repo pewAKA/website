@@ -25,6 +25,7 @@ public class JwtService {
                 .subject(identity.username())
                 .claim("uid", identity.id())
                 .claim("role", identity.role())
+                .claim("ver", identity.tokenVersion())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiresAt))
                 .signWith(signingKey())
@@ -39,7 +40,11 @@ public class JwtService {
                 .getPayload();
         Number userId = claims.get("uid", Number.class);
         String role = claims.get("role", String.class);
-        return new UserPrincipal(userId.longValue(), claims.getSubject(), role);
+        Number tokenVersion = claims.get("ver", Number.class);
+        if (userId == null || role == null || tokenVersion == null) {
+            throw new IllegalArgumentException("JWT 缺少必要的身份字段");
+        }
+        return new UserPrincipal(userId.longValue(), claims.getSubject(), role, tokenVersion.longValue());
     }
 
     private SecretKey signingKey() {
@@ -50,7 +55,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public record SysUserIdentity(Long id, String username, String role) {
+    public record SysUserIdentity(Long id, String username, String role, Long tokenVersion) {
     }
 }
-

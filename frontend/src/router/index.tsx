@@ -1,7 +1,16 @@
 import { createBrowserRouter } from 'react-router'
 import App from '@/App'
 import About from '@/pages/About'
+import {
+  AdminArticleEditor,
+  AdminArticles,
+  AdminLayout,
+  AdminLogin,
+  AdminTaxonomy,
+} from '@/pages/Admin'
+import { AdminSecurity } from '@/pages/Admin/Security'
 import Articles from '@/pages/Articles'
+import ArticleDetail from '@/pages/ArticleDetail'
 import Home from '@/pages/Home'
 import NotFound from '@/pages/NotFound'
 import Roadmap from '@/pages/Roadmap'
@@ -27,6 +36,10 @@ export const router = createBrowserRouter([
         element: <Articles />,
       },
       {
+        path: 'articles/:slug',
+        element: <ArticleDetail />,
+      },
+      {
         path: 'about',
         element: <About />,
       },
@@ -41,6 +54,40 @@ export const router = createBrowserRouter([
       {
         path: '*',
         element: <NotFound />,
+      },
+    ],
+  },
+  {
+    path: '/admin/login',
+    element: <AdminLogin />,
+  },
+  {
+    path: '/admin',
+    element: <AdminLayout />,
+    children: [
+      {
+        index: true,
+        element: <AdminArticles />,
+      },
+      {
+        path: 'articles',
+        element: <AdminArticles />,
+      },
+      {
+        path: 'articles/new',
+        element: <AdminArticleEditor />,
+      },
+      {
+        path: 'articles/:id',
+        element: <AdminArticleEditor />,
+      },
+      {
+        path: 'taxonomy',
+        element: <AdminTaxonomy />,
+      },
+      {
+        path: 'security',
+        element: <AdminSecurity />,
       },
     ],
   },

@@ -16,11 +16,12 @@ class JwtServiceTest {
         );
         JwtService service = new JwtService(properties);
 
-        String token = service.generateToken(new JwtService.SysUserIdentity(1L, "admin", "ADMIN"));
+        String token = service.generateToken(new JwtService.SysUserIdentity(1L, "admin", "ADMIN", 3L));
         UserPrincipal principal = service.parseToken(token);
 
         assertEquals(1L, principal.id());
         assertEquals("admin", principal.username());
         assertEquals("ADMIN", principal.role());
+        assertEquals(3L, principal.tokenVersion());
     }
 }

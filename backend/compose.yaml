@@ -7,5 +7,9 @@ services:
     network_mode: host
     env_file:
       - .env
+    environment:
+      APP_MEDIA_ROOT: /app/uploads
+    volumes:
+      # 生产环境请把 APP_MEDIA_HOST_PATH 指向 Nginx 可读取且会备份的绝对目录。
+      - ${APP_MEDIA_HOST_PATH:-./data/uploads}:/app/uploads
     restart: unless-stopped
-

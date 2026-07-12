@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,5 +28,13 @@ public class AuthController {
     public ApiResponse<CurrentUserResponse> currentUser(@AuthenticationPrincipal UserPrincipal principal) {
         return ApiResponse.success(authService.currentUser(principal));
     }
-}
 
+    @PutMapping("/password")
+    public ApiResponse<Void> changePassword(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @Valid @RequestBody ChangePasswordRequest request
+    ) {
+        authService.changePassword(principal, request);
+        return ApiResponse.success(null);
+    }
+}

@@ -38,7 +38,8 @@ public class AuthService {
         String token = jwtService.generateToken(new JwtService.SysUserIdentity(
                 user.getId(),
                 user.getUsername(),
-                user.getRole()
+                user.getRole(),
+                user.getTokenVersion()
         ));
         return new LoginResponse(token, "Bearer", jwtProperties.expiration().toSeconds());
     }
@@ -46,5 +47,21 @@ public class AuthService {
     public CurrentUserResponse currentUser(UserPrincipal principal) {
         return new CurrentUserResponse(principal.id(), principal.username(), principal.role());
     }
-}
 
+    public void changePassword(UserPrincipal principal, ChangePasswordRequest request) {
+        if (request.newPassword().length() < 12 || request.newPassword().length() > 72) {
+            throw new BusinessException("VALIDATION_ERROR", "新密码长度需为 12 到 72 位", HttpStatus.BAD_REQUEST);
+        }
+        SysUser user = userMapper.findById(principal.id());
+        if (user == null || !Boolean.TRUE.equals(user.getEnabled())
+                || !passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
+            throw new BusinessException("UNAUTHORIZED", "当前密码错误", HttpStatus.UNAUTHORIZED);
+        }
+        if (passwordEncoder.matches(request.newPassword(), user.getPasswordHash())) {
+            throw new BusinessException("VALIDATION_ERROR", "新密码不能与当前密码相同", HttpStatus.BAD_REQUEST);
+        }
+        if (userMapper.updatePasswordAndIncrementTokenVersion(user.getId(), passwordEncoder.encode(request.newPassword())) != 1) {
+            throw new BusinessException("UNAUTHORIZED", "账号状态已变化，请重新登录", HttpStatus.UNAUTHORIZED);
+        }
+    }
+}

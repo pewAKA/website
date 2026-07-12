@@ -1,0 +1,40 @@
+.code-block {
+  margin: 24px 0;
+  overflow: hidden;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-page-bg) 88%, #000 12%);
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 42px;
+    padding: 0 12px 0 16px;
+    border-bottom: 1px solid var(--color-line);
+    color: var(--color-muted);
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 12px;
+  }
+
+  button {
+    min-height: 30px;
+    padding: 0 10px;
+    border: 1px solid var(--color-line);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  pre {
+    max-width: 100%;
+    margin: 0;
+    padding: 18px 20px;
+    overflow: auto;
+    color: var(--color-text);
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.75;
+  }
+}

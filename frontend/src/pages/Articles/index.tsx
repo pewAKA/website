@@ -1,32 +1,199 @@
-import HubSection, { type HubSectionCard } from '@/pages/HubSection'
+import { useCallback, useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router'
+import { getArticles, getTaxonomy, type Article, type Taxonomy } from '@/services/articles'
+import { useDocumentMetadata } from '@/utils/seo'
+import './index.scss'
 
-const articleCards: HubSectionCard[] = [
-  {
-    meta: '专题模板',
-    title: 'React 与 TypeScript',
-    description: '记录组件设计、类型约束、状态管理和路由组织中的实践方法。',
-  },
-  {
-    meta: '工程模板',
-    title: '构建与质量',
-    description: '整理 Vite、Sass、Lint、接口请求和发布流程相关的工程化笔记。',
-  },
-  {
-    meta: '观察模板',
-    title: '交互与可视化',
-    description: '收纳 Three.js、R3F、动效节奏和信息展示方式的探索记录。',
-  },
-]
+const pageSize = 12
+
+function formatDate(value: string | null) {
+  if (!value) {
+    return '未发布'
+  }
+  return new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date(value))
+}
 
 function Articles() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [articles, setArticles] = useState<Article[]>([])
+  const [taxonomy, setTaxonomy] = useState<Taxonomy>({ categories: [], tags: [] })
+  const [total, setTotal] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const category = searchParams.get('category') || ''
+  const tag = searchParams.get('tag') || ''
+  const page = Number(searchParams.get('page') || '1')
+
+  useDocumentMetadata({
+    title: '技术文章 · Lynco Hub',
+    description: '沉淀 React、TypeScript、工程化与交互设计中的实践记录。',
+    canonicalPath: '/articles',
+  })
+
+  const loadArticles = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const [articlePage, articleTaxonomy] = await Promise.all([
+        getArticles({ category: category || undefined, tag: tag || undefined, page, pageSize }),
+        getTaxonomy(),
+      ])
+      setArticles(articlePage.items)
+      setTotal(articlePage.total)
+      setTaxonomy(articleTaxonomy)
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : '文章暂时无法加载。')
+    } finally {
+      setLoading(false)
+    }
+  }, [category, page, tag])
+
+  useEffect(() => {
+    void loadArticles()
+  }, [loadArticles])
+
+  function updateFilter(key: 'category' | 'tag', value: string) {
+    const next = new URLSearchParams(searchParams)
+    if (value) {
+      next.set(key, value)
+    } else {
+      next.delete(key)
+    }
+    next.delete('page')
+    setSearchParams(next)
+  }
+
+  function updatePage(nextPage: number) {
+    const next = new URLSearchParams(searchParams)
+    if (nextPage <= 1) {
+      next.delete('page')
+    } else {
+      next.set('page', String(nextPage))
+    }
+    setSearchParams(next)
+  }
+
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+
   return (
-    <HubSection
-      eyebrow="Technical Notes"
-      title="技术文章"
-      description="把临时笔记整理成可复用的知识节点，让经验不只停留在项目提交记录里。"
-      cards={articleCards}
-      footer="后续可以按技术栈、主题和发布时间组织文章列表，并接入 Markdown 或内容管理方案。"
-    />
+    <main className="articles-page">
+      <header className="articles-page__masthead">
+        <p>Technical field notes</p>
+        <h1>技术文章</h1>
+        <div>
+          <span>把项目里反复验证的过程，整理成下一次能直接找到的答案。</span>
+          <strong>{total} 篇已发布记录</strong>
+        </div>
+      </header>
+
+      <section className="articles-page__filters" aria-label="文章筛选">
+        <div>
+          <span>分类</span>
+          <button
+            className={!category ? 'is-active' : ''}
+            type="button"
+            onClick={() => updateFilter('category', '')}
+          >
+            全部
+          </button>
+          {taxonomy.categories.map((item) => (
+            <button
+              className={category === item.slug ? 'is-active' : ''}
+              key={item.id}
+              type="button"
+              onClick={() => updateFilter('category', item.slug)}
+            >
+              {item.name} <small>{item.articleCount}</small>
+            </button>
+          ))}
+        </div>
+        {taxonomy.tags.length > 0 && (
+          <div>
+            <span>标签</span>
+            <button
+              className={!tag ? 'is-active' : ''}
+              type="button"
+              onClick={() => updateFilter('tag', '')}
+            >
+              所有主题
+            </button>
+            {taxonomy.tags.map((item) => (
+              <button
+                className={tag === item.slug ? 'is-active' : ''}
+                key={item.id}
+                type="button"
+                onClick={() => updateFilter('tag', item.slug)}
+              >
+                #{item.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {loading && <p className="articles-page__state">正在整理文章索引…</p>}
+      {!loading && error && (
+        <p className="articles-page__state articles-page__state--error">{error}</p>
+      )}
+      {!loading && !error && articles.length === 0 && (
+        <section className="articles-page__empty">
+          <span>还没有匹配的记录</span>
+          <p>调整分类或标签，或者等待下一篇文章发布。</p>
+          {(category || tag) && (
+            <button type="button" onClick={() => setSearchParams({})}>
+              清除筛选
+            </button>
+          )}
+        </section>
+      )}
+
+      {!loading && !error && articles.length > 0 && (
+        <section className="articles-page__list" aria-label="文章列表">
+          {articles.map((article, index) => (
+            <Link className="article-card" key={article.id} to={`/articles/${article.slug}`}>
+              <span className="article-card__index">
+                {String((page - 1) * pageSize + index + 1).padStart(2, '0')}
+              </span>
+              <div className="article-card__content">
+                <div className="article-card__meta">
+                  <span>{article.category.name}</span>
+                  <time>{formatDate(article.publishedAt)}</time>
+                </div>
+                <h2>{article.title}</h2>
+                <p>{article.summary}</p>
+                <div className="article-card__tags">
+                  {article.tags.map((item) => (
+                    <span key={item.id}>#{item.name}</span>
+                  ))}
+                </div>
+              </div>
+              {article.coverImageUrl && <img src={article.coverImageUrl} alt="" />}
+              <span className="article-card__arrow" aria-hidden="true">
+                ↗
+              </span>
+            </Link>
+          ))}
+        </section>
+      )}
+
+      {totalPages > 1 && (
+        <nav className="articles-page__pagination" aria-label="文章分页">
+          <button disabled={page <= 1} type="button" onClick={() => updatePage(page - 1)}>
+            上一页
+          </button>
+          <span>
+            第 {page} / {totalPages} 页
+          </span>
+          <button disabled={page >= totalPages} type="button" onClick={() => updatePage(page + 1)}>
+            下一页
+          </button>
+        </nav>
+      )}
+    </main>
   )
 }
 

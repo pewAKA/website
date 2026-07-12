@@ -20,6 +20,11 @@ mvn spring-boot:run
 | GET | /api/actuator/health | 服务健康检查 |
 | POST | /api/auth/login | 管理员登录 |
 | GET | /api/auth/me | 获取当前登录管理员 |
+| GET | /api/articles | 已发布文章分页列表，可按 `category`、`tag` 筛选 |
+| GET | /api/articles/{slug} | 已发布文章详情 |
+| GET | /api/article-taxonomy | 公开分类与标签 |
+| GET | /api/sitemap.xml | 已发布文章 sitemap |
+| /api/admin/** | 文章、分类、标签与图片管理接口，需要管理员 JWT |
 
 登录请求示例：
 
@@ -53,3 +58,14 @@ mvn spring-boot:run
 启动脚本会读取被 Git 忽略的 .env.local，并将服务启动在 http://127.0.0.1:8081。此模式会访问服务器的 personal_website 数据库，请谨慎执行写操作和数据库迁移。
 
 IDEA 直接运行时，Spring Boot 也会自动读取 .env.local；此时只需保持 SSH 隧道脚本运行。
+
+## 文章媒体与 sitemap 部署
+
+文章图片通过管理员接口上传，只接受 JPEG、PNG、WebP，单文件最大 5 MB。容器内路径固定为 `/app/uploads`，请在部署 `.env` 中设置 `APP_MEDIA_HOST_PATH` 为 Nginx 也能读取的绝对宿主机目录，并把该目录纳入备份。例如：
+
+~~~properties
+APP_MEDIA_HOST_PATH=/var/lib/personal-website/uploads
+APP_SITE_URL=https://example.com
+~~~
+
+`deploy/nginx/personal-website-api.conf` 中 `/media/` 的 `alias` 必须指向同一目录；根路径 `/sitemap.xml` 会代理到应用生成的文章 sitemap。

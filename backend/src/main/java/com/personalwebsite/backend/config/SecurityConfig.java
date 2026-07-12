@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -37,6 +38,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/health", "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/articles", "/articles/**", "/article-taxonomy", "/sitemap.xml", "/media/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/auth/password").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, error) ->
@@ -77,4 +81,3 @@ public class SecurityConfig {
         objectMapper.writeValue(response.getOutputStream(), ApiResponse.failure(code, message));
     }
 }
-
