@@ -1,2 +1,4 @@
 allowBuilds:
   '@parcel/watcher': false
+overrides:
+  '@types/three': 0.185.1

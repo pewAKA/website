@@ -1,14 +1,8 @@
-import { Canvas } from '@react-three/fiber'
-import {
-  AccumulativeShadows,
-  Environment,
-  GizmoHelper,
-  GizmoViewport,
-  MeshTransmissionMaterial,
-  OrbitControls,
-  RandomizedLight,
-  useEnvironment,
-} from '@react-three/drei'
+import { Canvas, useLoader, useThree } from '@react-three/fiber'
+import { GizmoHelper, GizmoViewport, OrbitControls } from '@react-three/drei'
+import { Suspense, useEffect } from 'react'
+import { EquirectangularReflectionMapping } from 'three'
+import { HDRLoader } from 'three/addons/loaders/HDRLoader.js'
 import './index.scss'
 
 const HDR_ENV_URL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancing_hall_1k.hdr'
@@ -16,48 +10,60 @@ const HDR_ENV_URL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancin
 function TestPage() {
   return (
     <div className="test-page">
-      {/* 外层容器负责控制 Canvas 在屏幕上的尺寸和位置 */}
       <Canvas shadows className="test-canvas" camera={{ position: [5, 5, 5] }}>
-        <Scene />
+        {/* useLoader 内部会触发 Promise，需要用 Suspense 包裹以等待资源加载 */}
+        <Suspense fallback={null}>
+          <Scene />
+        </Suspense>
       </Canvas>
     </div>
   )
 }
 
 function Scene() {
-  // 通过 useEnvironment 先拿到贴图实例，再同时给 Environment 和折射材质复用。
-  const envMap = useEnvironment({ files: HDR_ENV_URL })
+  // 1. 获取当前 Three.js 的 scene 对象
+  const { scene } = useThree()
+
+  // 2. 使用 R3F 的 useLoader 结合 Three.js 的 HDRLoader 加载 HDR
+  const texture = useLoader(HDRLoader, HDR_ENV_URL)
+
+  // 3. 使用 useEffect 在贴图加载完成后应用到场景中
+  useEffect(() => {
+    if (texture) {
+      // 必须设置等距圆柱投影映射，否则 HDR 贴图会显示异常/变形
+      texture.mapping = EquirectangularReflectionMapping
+
+      // 赋值给场景背景和环境光照
+      scene.background = texture
+      scene.environment = texture
+
+      // 设置背景模糊度（Three.js 原生属性）
+      scene.backgroundBlurriness = 0.5
+    }
+
+    // 4. 组件卸载时的清理工作，避免内存泄漏或污染其他场景
+    return () => {
+      scene.background = null
+      scene.environment = null
+      scene.backgroundBlurriness = 0
+    }
+  }, [texture, scene])
 
   return (
     <>
-      {/* <ambientLight intensity={1} /> */}
-      <pointLight position={[0, 5, 0]} intensity={80} />
+      <ambientLight intensity={0.5} />
+      <pointLight
+        castShadow
+        position={[4, 6, 3]}
+        intensity={80}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-bias={-0.0001}
+      />
       <Cube />
-      <Sphere />
-      <Environment map={envMap} background backgroundBlurriness={0.5} />
-      <AccumulativeShadows
-        temporal
-        frames={100}
-        alphaTest={0.9}
-        color="#3ead5d"
-        colorBlend={1}
-        opacity={0.8}
-        scale={20}
-      >
-        <RandomizedLight
-          radius={10}
-          ambient={0.5}
-          intensity={Math.PI}
-          position={[2.5, 8, -2.5]}
-          bias={0.001}
-        />
-      </AccumulativeShadows>
+      <Ground />
       <OrbitControls enableDamping />
-      {/* 交互式坐标系组件 */}
-      <GizmoHelper
-        alignment="bottom-right" // 位置可以设为 top-right, bottom-right 等
-        margin={[80, 80]} // 距离画布边缘的边距
-      >
+      <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
         <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="white" />
       </GizmoHelper>
     </>
@@ -66,18 +72,18 @@ function Scene() {
 
 function Cube() {
   return (
-    <mesh position={[-5, 0, 0]}>
-      <coneGeometry />
+    <mesh castShadow position={[0, 0, 0]}>
+      <boxGeometry args={[5, 5, 5]} />
       <meshStandardMaterial color="#e2ad71" />
     </mesh>
   )
 }
 
-function Sphere() {
+function Ground() {
   return (
-    <mesh position={[5, 0, 0]}>
-      <torusKnotGeometry args={[2, 1, 128, 128]} />
-      <MeshTransmissionMaterial thickness={0.2} ior={3} chromaticAberration={0.2} />
+    <mesh receiveShadow rotation-x={-Math.PI / 2} position={[0, -2.5, 0]}>
+      <planeGeometry args={[16, 16]} />
+      <meshStandardMaterial color={'#f1f1f1'} />
     </mesh>
   )
 }
