@@ -3,7 +3,9 @@ import { GizmoHelper, GizmoViewport, OrbitControls } from '@react-three/drei'
 import { Suspense, useEffect } from 'react'
 import { EquirectangularReflectionMapping } from 'three'
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js'
+import CustomMesh from './components/CustomMesh'
 import './index.scss'
+import BufferMesh from './components/BufferMesh'
 
 const HDR_ENV_URL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancing_hall_1k.hdr'
 
@@ -39,6 +41,8 @@ function Scene() {
 
       // 设置背景模糊度（Three.js 原生属性）
       scene.backgroundBlurriness = 0.5
+
+      scene.environmentIntensity = 0.3
     }
 
     // 4. 组件卸载时的清理工作，避免内存泄漏或污染其他场景
@@ -51,7 +55,6 @@ function Scene() {
 
   return (
     <>
-      <ambientLight intensity={0.5} />
       <pointLight
         castShadow
         position={[4, 6, 3]}
@@ -62,6 +65,8 @@ function Scene() {
       />
       <Cube />
       <Ground />
+      <CustomMesh position={[0, 4, 0]} />
+      <BufferMesh />
       <OrbitControls enableDamping />
       <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
         <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="white" />
@@ -72,7 +77,7 @@ function Scene() {
 
 function Cube() {
   return (
-    <mesh castShadow position={[0, 0, 0]}>
+    <mesh receiveShadow castShadow position={[0, 0, 0]}>
       <boxGeometry args={[5, 5, 5]} />
       <meshStandardMaterial color="#e2ad71" />
     </mesh>
@@ -81,7 +86,7 @@ function Cube() {
 
 function Ground() {
   return (
-    <mesh receiveShadow rotation-x={-Math.PI / 2} position={[0, -2.5, 0]}>
+    <mesh receiveShadow rotation-x={-Math.PI / 2} position={[0, 0, 0]}>
       <planeGeometry args={[16, 16]} />
       <meshStandardMaterial color={'#f1f1f1'} />
     </mesh>
