@@ -6,8 +6,10 @@ import { HDRLoader } from 'three/addons/loaders/HDRLoader.js'
 import CustomMesh from './components/CustomMesh'
 import './index.scss'
 import BufferMesh from './components/BufferMesh'
+import GroundMesh from './components/GroundMesh'
 
-const HDR_ENV_URL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancing_hall_1k.hdr'
+// const HDR_ENV_URL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancing_hall_1k.hdr'
+const HDR_ENV_URL = '/src/assets/threejs/envMap/monochrome_studio_02_1k.hdr'
 
 function TestPage() {
   return (
@@ -55,16 +57,9 @@ function Scene() {
 
   return (
     <>
-      <pointLight
-        castShadow
-        position={[4, 6, 3]}
-        intensity={80}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-bias={-0.0001}
-      />
+      <pointLight castShadow position={[4, 6, 3]} intensity={80} />
+      <GroundMesh />
       <Cube />
-      <Ground />
       <CustomMesh position={[0, 4, 0]} />
       <BufferMesh />
       <OrbitControls enableDamping />
@@ -80,15 +75,6 @@ function Cube() {
     <mesh receiveShadow castShadow position={[0, 0, 0]}>
       <boxGeometry args={[5, 5, 5]} />
       <meshStandardMaterial color="#e2ad71" />
-    </mesh>
-  )
-}
-
-function Ground() {
-  return (
-    <mesh receiveShadow rotation-x={-Math.PI / 2} position={[0, 0, 0]}>
-      <planeGeometry args={[16, 16]} />
-      <meshStandardMaterial color={'#f1f1f1'} />
     </mesh>
   )
 }
