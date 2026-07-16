@@ -9,7 +9,7 @@ import BufferMesh from './components/BufferMesh'
 import GroundMesh from './components/GroundMesh'
 
 // const HDR_ENV_URL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancing_hall_1k.hdr'
-const HDR_ENV_URL = '/src/assets/threejs/envMap/monochrome_studio_02_1k.hdr'
+const HDR_ENV_URL = '/src/assets/threejs/envMap/historic_cloister_passage_2k.hdr'
 
 function TestPage() {
   return (
@@ -42,7 +42,7 @@ function Scene() {
       scene.environment = texture
 
       // 设置背景模糊度（Three.js 原生属性）
-      scene.backgroundBlurriness = 0.5
+      scene.backgroundBlurriness = 0
 
       scene.environmentIntensity = 0.3
     }
@@ -58,10 +58,12 @@ function Scene() {
   return (
     <>
       <pointLight castShadow position={[4, 6, 3]} intensity={80} />
+
       <GroundMesh />
       <Cube />
       <CustomMesh position={[0, 4, 0]} />
       <BufferMesh />
+
       <OrbitControls enableDamping />
       <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
         <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="white" />
@@ -73,8 +75,8 @@ function Scene() {
 function Cube() {
   return (
     <mesh receiveShadow castShadow position={[0, 0, 0]}>
-      <boxGeometry args={[5, 5, 5]} />
-      <meshStandardMaterial color="#e2ad71" />
+      <boxGeometry args={[5, 5, 5, 10, 10, 10]} />
+      <meshStandardMaterial color="#e2ad71" metalness={0.8} roughness={0.5} />
     </mesh>
   )
 }

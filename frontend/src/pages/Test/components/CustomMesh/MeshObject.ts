@@ -11,10 +11,13 @@ export default class MeshObject implements GeneralMesh {
     material
     mesh
     constructor() {
-        this.geometry = new Three.SphereGeometry(0.5, 4, 2)
-        this.material = new Three.MeshStandardMaterial({
+        this.geometry = new Three.SphereGeometry(1, 24, 24)
+        this.material = new Three.MeshPhysicalMaterial({
             color: '#db6666',
-            metalness: 1
+            roughness: 0,
+            transmission: 1,
+            thickness: 0.9,
+            ior: 1.5,
         })
         this.mesh = new Three.Mesh(this.geometry, this.material)
         this.mesh.castShadow = true
