@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Link, useSearchParams } from 'react-router'
-import { getArticles, getTaxonomy, type Article, type Taxonomy } from '@/services/articles'
+import { articlesQueryOptions, taxonomyQueryOptions } from '@/queries/articleQueries'
 import { useDocumentMetadata } from '@/utils/seo'
 import './index.scss'
 
@@ -19,42 +19,30 @@ function formatDate(value: string | null) {
 
 function Articles() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [articles, setArticles] = useState<Article[]>([])
-  const [taxonomy, setTaxonomy] = useState<Taxonomy>({ categories: [], tags: [] })
-  const [total, setTotal] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
   const category = searchParams.get('category') || ''
   const tag = searchParams.get('tag') || ''
   const page = Number(searchParams.get('page') || '1')
+  const articlesQuery = useQuery(
+    articlesQueryOptions({
+      category: category || undefined,
+      tag: tag || undefined,
+      page,
+      pageSize,
+    }),
+  )
+  const taxonomyQuery = useQuery(taxonomyQueryOptions())
+  const articles = articlesQuery.data?.items || []
+  const taxonomy = taxonomyQuery.data || { categories: [], tags: [] }
+  const total = articlesQuery.data?.total || 0
+  const loading = articlesQuery.isPending || taxonomyQuery.isPending
+  const queryError = articlesQuery.error || taxonomyQuery.error
+  const error = queryError instanceof Error ? queryError.message : ''
 
   useDocumentMetadata({
     title: '技术文章 · Lynco Hub',
     description: '沉淀 React、TypeScript、工程化与交互设计中的实践记录。',
     canonicalPath: '/articles',
   })
-
-  const loadArticles = useCallback(async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const [articlePage, articleTaxonomy] = await Promise.all([
-        getArticles({ category: category || undefined, tag: tag || undefined, page, pageSize }),
-        getTaxonomy(),
-      ])
-      setArticles(articlePage.items)
-      setTotal(articlePage.total)
-      setTaxonomy(articleTaxonomy)
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : '文章暂时无法加载。')
-    } finally {
-      setLoading(false)
-    }
-  }, [category, page, tag])
-
-  useEffect(() => {
-    void loadArticles()
-  }, [loadArticles])
 
   function updateFilter(key: 'category' | 'tag', value: string) {
     const next = new URLSearchParams(searchParams)

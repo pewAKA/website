@@ -1,8 +1,9 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import Articles from '@/pages/Articles'
 import { getArticles, getTaxonomy } from '@/services/articles'
+import { renderWithQueryClient } from '@/test/renderWithQueryClient'
 
 vi.mock('@/services/articles', () => ({
   getArticles: vi.fn(),
@@ -49,7 +50,7 @@ describe('Articles', () => {
       pageSize: 12,
     })
 
-    render(
+    renderWithQueryClient(
       <MemoryRouter initialEntries={['/articles']}>
         <Routes>
           <Route path="/articles" element={<Articles />} />
@@ -62,7 +63,9 @@ describe('Articles', () => {
     await waitFor(() =>
       expect(mockGetArticles).toHaveBeenLastCalledWith(
         expect.objectContaining({ category: 'frontend' }),
+        expect.any(AbortSignal),
       ),
     )
+    expect(mockGetTaxonomy).toHaveBeenCalledOnce()
   })
 })

@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Link, useParams } from 'react-router'
 import CodeBlock from '@/components/CodeBlock'
-import { getArticle, type Article } from '@/services/articles'
+import { articleQueryOptions } from '@/queries/articleQueries'
 import { useDocumentMetadata } from '@/utils/seo'
 import './index.scss'
 
@@ -35,9 +36,10 @@ function formatDate(value: string | null) {
 
 function ArticleDetail() {
   const { slug = '' } = useParams()
-  const [article, setArticle] = useState<Article | null>(null)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(true)
+  const articleQuery = useQuery(articleQueryOptions(slug))
+  const article = articleQuery.data || null
+  const error = articleQuery.error instanceof Error ? articleQuery.error.message : ''
+  const loading = articleQuery.isPending
   const headings = useMemo(() => getHeadings(article?.content || ''), [article?.content])
 
   useDocumentMetadata({
@@ -45,31 +47,6 @@ function ArticleDetail() {
     description: article?.summary || 'Lynco Hub 的技术文章。',
     canonicalPath: `/articles/${slug}`,
   })
-
-  useEffect(() => {
-    let cancelled = false
-    setLoading(true)
-    setError('')
-    void getArticle(slug)
-      .then((result) => {
-        if (!cancelled) {
-          setArticle(result)
-        }
-      })
-      .catch((loadError: unknown) => {
-        if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : '文章暂时无法加载。')
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [slug])
 
   if (loading) {
     return <main className="article-detail article-detail--state">正在打开文章…</main>

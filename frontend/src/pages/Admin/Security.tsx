@@ -1,7 +1,7 @@
-import { useState } from 'react'
 import { Form, Input, Button, message } from 'antd'
 import { useNavigate } from 'react-router'
-import { changePassword, type ChangePasswordPayload } from '@/services/articles'
+import { useChangePasswordMutation } from '@/queries/articleMutations'
+import type { ChangePasswordPayload } from '@/services/articles'
 import { clearAdminToken } from '@/services/request'
 import './index.scss'
 
@@ -11,13 +11,12 @@ type PasswordFormValues = ChangePasswordPayload & {
 
 export function AdminSecurity() {
   const [form] = Form.useForm<PasswordFormValues>()
-  const [submitting, setSubmitting] = useState(false)
+  const changePasswordMutation = useChangePasswordMutation()
   const navigate = useNavigate()
 
   async function submit(values: PasswordFormValues) {
-    setSubmitting(true)
     try {
-      await changePassword({
+      await changePasswordMutation.mutateAsync({
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       })
@@ -25,8 +24,6 @@ export function AdminSecurity() {
       navigate('/admin/login', { replace: true, state: { passwordChanged: true } })
     } catch (error) {
       message.error(error instanceof Error ? error.message : '密码未能更新，请稍后重试。')
-    } finally {
-      setSubmitting(false)
     }
   }
 
@@ -84,7 +81,7 @@ export function AdminSecurity() {
           >
             <Input.Password autoComplete="new-password" />
           </Form.Item>
-          <Button htmlType="submit" loading={submitting} type="primary">
+          <Button htmlType="submit" loading={changePasswordMutation.isPending} type="primary">
             更新密码并退出登录
           </Button>
         </Form>

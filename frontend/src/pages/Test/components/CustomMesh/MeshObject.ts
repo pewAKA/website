@@ -22,6 +22,7 @@ export default class MeshObject implements GeneralMesh {
         this.mesh = new Three.Mesh(this.geometry, this.material)
         this.mesh.castShadow = true
         this.mesh.receiveShadow = true
+        this.geometry.computeBoundingBox()
     }
     setPosition(position: [number, number, number] | undefined) {
         if (!position) return

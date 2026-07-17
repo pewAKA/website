@@ -1,9 +1,10 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AdminSecurity } from '@/pages/Admin/Security'
 import { changePassword } from '@/services/articles'
 import { clearAdminToken } from '@/services/request'
+import { renderWithQueryClient } from '@/test/renderWithQueryClient'
 
 vi.mock('@/services/articles', () => ({
   changePassword: vi.fn(),
@@ -17,7 +18,7 @@ const mockChangePassword = vi.mocked(changePassword)
 const mockClearAdminToken = vi.mocked(clearAdminToken)
 
 function renderSecurityPage() {
-  return render(
+  return renderWithQueryClient(
     <MemoryRouter initialEntries={['/admin/security']}>
       <Routes>
         <Route path="/admin/security" element={<AdminSecurity />} />
@@ -51,7 +52,8 @@ describe('AdminSecurity', () => {
 
   it('成功后清除令牌并跳转至登录页', async () => {
     mockChangePassword.mockResolvedValue(null)
-    renderSecurityPage()
+    const { queryClient } = renderSecurityPage()
+    queryClient.setQueryData(['admin', 'articles'], { items: [] })
     fillPasswords('new-secure-password')
 
     fireEvent.click(screen.getByRole('button', { name: '更新密码并退出登录' }))
@@ -63,6 +65,7 @@ describe('AdminSecurity', () => {
       }),
     )
     expect(mockClearAdminToken).toHaveBeenCalledOnce()
+    expect(queryClient.getQueryData(['admin', 'articles'])).toBeUndefined()
     expect(await screen.findByText('登录页')).toBeInTheDocument()
   })
 

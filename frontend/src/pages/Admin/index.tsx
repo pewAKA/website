@@ -1,30 +1,34 @@
-import { useCallback, useEffect, useState, type ChangeEvent } from 'react'
+import { useEffect, useState, type ChangeEvent } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button, Form, Input, InputNumber, Select, Switch, message } from 'antd'
 import { Link, Navigate, NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router'
 import {
-  createArticle,
-  createCategory,
-  createTag,
-  deleteArticle,
-  deleteCategory,
-  deleteTag,
-  getAdminArticle,
-  getAdminArticles,
-  getAdminCategories,
-  getAdminTags,
-  login,
-  publishArticle,
-  unpublishArticle,
-  updateArticle,
-  updateCategory,
-  updateTag,
-  uploadMedia,
   type Article,
   type ArticleCategory,
   type ArticlePayload,
   type ArticleTag,
-  type PageResponse,
 } from '@/services/articles'
+import {
+  useCreateArticleMutation,
+  useCreateCategoryMutation,
+  useCreateTagMutation,
+  useDeleteArticleMutation,
+  useDeleteCategoryMutation,
+  useDeleteTagMutation,
+  useLoginMutation,
+  usePublishArticleMutation,
+  useUnpublishArticleMutation,
+  useUpdateArticleMutation,
+  useUpdateCategoryMutation,
+  useUpdateTagMutation,
+  useUploadMediaMutation,
+} from '@/queries/articleMutations'
+import {
+  adminArticleQueryOptions,
+  adminArticlesQueryOptions,
+  adminCategoriesQueryOptions,
+  adminTagsQueryOptions,
+} from '@/queries/articleQueries'
 import { clearAdminToken, getAdminToken, setAdminToken } from '@/services/request'
 import './index.scss'
 
@@ -48,7 +52,7 @@ function formatDate(value: string | null) {
 export function AdminLogin() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [submitting, setSubmitting] = useState(false)
+  const loginMutation = useLoginMutation()
 
   useEffect(() => {
     if (!(location.state as { passwordChanged?: boolean } | null)?.passwordChanged) {
@@ -59,15 +63,12 @@ export function AdminLogin() {
   }, [location.state, navigate])
 
   async function submit(values: LoginValues) {
-    setSubmitting(true)
     try {
-      const result = await login(values.username, values.password)
+      const result = await loginMutation.mutateAsync(values)
       setAdminToken(result.token)
       navigate('/admin/articles', { replace: true })
     } catch (error) {
       message.error(errorText(error))
-    } finally {
-      setSubmitting(false)
     }
   }
 
@@ -97,7 +98,13 @@ export function AdminLogin() {
           >
             <Input.Password autoComplete="current-password" placeholder="输入密码" />
           </Form.Item>
-          <Button block htmlType="submit" loading={submitting} size="large" type="primary">
+          <Button
+            block
+            htmlType="submit"
+            loading={loginMutation.isPending}
+            size="large"
+            type="primary"
+          >
             登录管理后台
           </Button>
         </Form>
@@ -108,6 +115,7 @@ export function AdminLogin() {
 
 export function AdminLayout() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   if (!getAdminToken()) {
     return <Navigate replace to="/admin/login" />
   }
@@ -115,6 +123,7 @@ export function AdminLayout() {
   function logout() {
     // 主动清理当前标签页的令牌，避免共用设备继续保留管理权限。
     clearAdminToken()
+    queryClient.clear()
     navigate('/admin/login', { replace: true })
   }
 
@@ -140,37 +149,26 @@ export function AdminLayout() {
 
 export function AdminArticles() {
   const [status, setStatus] = useState('')
-  const [result, setResult] = useState<PageResponse<Article> | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
   const navigate = useNavigate()
-
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError('')
-    try {
-      setResult(await getAdminArticles({ status: status || undefined, page: 1, pageSize: 50 }))
-    } catch (loadError) {
-      setError(errorText(loadError))
-    } finally {
-      setLoading(false)
-    }
-  }, [status])
-
-  useEffect(() => {
-    void load()
-  }, [load])
+  const articlesQuery = useQuery(
+    adminArticlesQueryOptions({ status: status || undefined, page: 1, pageSize: 50 }),
+  )
+  const publishMutation = usePublishArticleMutation()
+  const unpublishMutation = useUnpublishArticleMutation()
+  const deleteMutation = useDeleteArticleMutation()
+  const result = articlesQuery.data
+  const loading = articlesQuery.isPending
+  const error = articlesQuery.error ? errorText(articlesQuery.error) : ''
 
   async function changePublication(article: Article) {
     try {
       if (article.status === 'PUBLISHED') {
-        await unpublishArticle(article.id)
+        await unpublishMutation.mutateAsync(article.id)
         message.success('文章已撤回为草稿')
       } else {
-        await publishArticle(article.id)
+        await publishMutation.mutateAsync(article.id)
         message.success('文章已发布')
       }
-      await load()
     } catch (actionError) {
       message.error(errorText(actionError))
     }
@@ -181,9 +179,8 @@ export function AdminArticles() {
       return
     }
     try {
-      await deleteArticle(article.id)
+      await deleteMutation.mutateAsync(article.id)
       message.success('文章已删除')
-      await load()
     } catch (actionError) {
       message.error(errorText(actionError))
     }
@@ -213,11 +210,13 @@ export function AdminArticles() {
         <span>{result?.total || 0} 篇</span>
       </div>
       {loading && <p className="admin-page__state">正在读取文章…</p>}
-      {!loading && error && <p className="admin-page__state admin-page__state--error">{error}</p>}
-      {!loading && !error && result?.items.length === 0 && (
+      {!loading && articlesQuery.error && (
+        <p className="admin-page__state admin-page__state--error">{error}</p>
+      )}
+      {!loading && !articlesQuery.error && result?.items.length === 0 && (
         <p className="admin-page__state">还没有文章，先创建一篇草稿吧。</p>
       )}
-      {!loading && !error && result && result.items.length > 0 && (
+      {!loading && !articlesQuery.error && result && result.items.length > 0 && (
         <div className="admin-article-list">
           {result.items.map((article) => (
             <article key={article.id}>
@@ -233,10 +232,21 @@ export function AdminArticles() {
               </div>
               <div className="admin-article-list__actions">
                 <Button onClick={() => navigate(`/admin/articles/${article.id}`)}>编辑</Button>
-                <Button onClick={() => void changePublication(article)}>
+                <Button
+                  loading={
+                    article.status === 'PUBLISHED'
+                      ? unpublishMutation.isPending && unpublishMutation.variables === article.id
+                      : publishMutation.isPending && publishMutation.variables === article.id
+                  }
+                  onClick={() => void changePublication(article)}
+                >
                   {article.status === 'PUBLISHED' ? '撤回' : '发布'}
                 </Button>
-                <Button danger onClick={() => void remove(article)}>
+                <Button
+                  danger
+                  loading={deleteMutation.isPending && deleteMutation.variables === article.id}
+                  onClick={() => void remove(article)}
+                >
                   删除
                 </Button>
               </div>
@@ -251,51 +261,43 @@ export function AdminArticles() {
 export function AdminArticleEditor() {
   const { id } = useParams()
   const [form] = Form.useForm<EditorValues>()
-  const [categories, setCategories] = useState<ArticleCategory[]>([])
-  const [tags, setTags] = useState<ArticleTag[]>([])
-  const [loading, setLoading] = useState(Boolean(id))
-  const [saving, setSaving] = useState(false)
-  const [uploading, setUploading] = useState(false)
   const navigate = useNavigate()
+  const categoriesQuery = useQuery(adminCategoriesQueryOptions())
+  const tagsQuery = useQuery(adminTagsQueryOptions())
+  const articleQuery = useQuery(adminArticleQueryOptions(id || ''))
+  const createMutation = useCreateArticleMutation()
+  const updateMutation = useUpdateArticleMutation()
+  const uploadMutation = useUploadMediaMutation()
+  const categories = categoriesQuery.data || []
+  const tags = tagsQuery.data || []
+  const loading =
+    categoriesQuery.isPending || tagsQuery.isPending || (Boolean(id) && articleQuery.isPending)
+  const saving = createMutation.isPending || updateMutation.isPending
+  const loadError = categoriesQuery.error || tagsQuery.error || articleQuery.error
 
   useEffect(() => {
-    let cancelled = false
-    void Promise.all([
-      getAdminCategories(),
-      getAdminTags(),
-      id ? getAdminArticle(id) : Promise.resolve(null),
-    ])
-      .then(([nextCategories, nextTags, article]) => {
-        if (cancelled) {
-          return
-        }
-        setCategories(nextCategories)
-        setTags(nextTags)
-        if (article) {
-          form.setFieldsValue({
-            title: article.title,
-            slug: article.slug,
-            summary: article.summary,
-            content: article.content,
-            coverImageUrl: article.coverImageUrl || '',
-            categoryId: article.category.id,
-            tagIds: article.tags.map((item) => item.id),
-          })
-        }
-      })
-      .catch((loadError: unknown) => message.error(errorText(loadError)))
-      .finally(() => {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      })
-    return () => {
-      cancelled = true
+    const article = articleQuery.data
+    if (!article) {
+      return
     }
-  }, [form, id])
+    form.setFieldsValue({
+      title: article.title,
+      slug: article.slug,
+      summary: article.summary,
+      content: article.content,
+      coverImageUrl: article.coverImageUrl || '',
+      categoryId: article.category.id,
+      tagIds: article.tags.map((item) => item.id),
+    })
+  }, [articleQuery.data, form])
+
+  useEffect(() => {
+    if (loadError) {
+      message.error(errorText(loadError))
+    }
+  }, [loadError])
 
   async function save(values: EditorValues) {
-    setSaving(true)
     try {
       const payload: ArticlePayload = {
         ...values,
@@ -303,13 +305,13 @@ export function AdminArticleEditor() {
         tagIds: (values.tagIds || []).map(Number),
         coverImageUrl: values.coverImageUrl?.trim() || '',
       }
-      const saved = id ? await updateArticle(id, payload) : await createArticle(payload)
+      const saved = id
+        ? await updateMutation.mutateAsync({ id, payload })
+        : await createMutation.mutateAsync(payload)
       message.success(id ? '文章已保存' : '草稿已创建')
       navigate(`/admin/articles/${saved.id}`, { replace: true })
     } catch (saveError) {
       message.error(errorText(saveError))
-    } finally {
-      setSaving(false)
     }
   }
 
@@ -319,15 +321,12 @@ export function AdminArticleEditor() {
     if (!file) {
       return
     }
-    setUploading(true)
     try {
-      const result = await uploadMedia(file)
+      const result = await uploadMutation.mutateAsync(file)
       form.setFieldValue('coverImageUrl', result.url)
       message.success('图片已上传，并已填入封面地址')
     } catch (uploadError) {
       message.error(errorText(uploadError))
-    } finally {
-      setUploading(false)
     }
   }
 
@@ -419,7 +418,9 @@ export function AdminArticleEditor() {
             onChange={(event) => void upload(event)}
             type="file"
           />
-          <span>{uploading ? '正在上传…' : '上传封面（JPEG、PNG、WebP，最大 5 MB）'}</span>
+          <span>
+            {uploadMutation.isPending ? '正在上传…' : '上传封面（JPEG、PNG、WebP，最大 5 MB）'}
+          </span>
         </label>
         <Form.Item
           label="Markdown 正文"
@@ -437,40 +438,40 @@ export function AdminArticleEditor() {
 }
 
 export function AdminTaxonomy() {
-  const [categories, setCategories] = useState<ArticleCategory[]>([])
-  const [tags, setTags] = useState<ArticleTag[]>([])
   const [categoryEditing, setCategoryEditing] = useState<ArticleCategory | null>(null)
   const [tagEditing, setTagEditing] = useState<ArticleTag | null>(null)
   const [categoryForm] = Form.useForm<CategoryValues>()
   const [tagForm] = Form.useForm<TagValues>()
-
-  const load = useCallback(async () => {
-    try {
-      const [nextCategories, nextTags] = await Promise.all([getAdminCategories(), getAdminTags()])
-      setCategories(nextCategories)
-      setTags(nextTags)
-    } catch (loadError) {
-      message.error(errorText(loadError))
-    }
-  }, [])
+  const categoriesQuery = useQuery(adminCategoriesQueryOptions())
+  const tagsQuery = useQuery(adminTagsQueryOptions())
+  const createCategoryMutation = useCreateCategoryMutation()
+  const updateCategoryMutation = useUpdateCategoryMutation()
+  const deleteCategoryMutation = useDeleteCategoryMutation()
+  const createTagMutation = useCreateTagMutation()
+  const updateTagMutation = useUpdateTagMutation()
+  const deleteTagMutation = useDeleteTagMutation()
+  const categories = categoriesQuery.data || []
+  const tags = tagsQuery.data || []
+  const loadError = categoriesQuery.error || tagsQuery.error
 
   useEffect(() => {
-    void load()
-  }, [load])
+    if (loadError) {
+      message.error(errorText(loadError))
+    }
+  }, [loadError])
 
   async function saveCategory(values: CategoryValues) {
     try {
       if (categoryEditing) {
-        await updateCategory(categoryEditing.id, values)
+        await updateCategoryMutation.mutateAsync({ id: categoryEditing.id, payload: values })
         message.success('分类已更新')
       } else {
-        await createCategory(values)
+        await createCategoryMutation.mutateAsync(values)
         message.success('分类已创建')
       }
       setCategoryEditing(null)
       categoryForm.resetFields()
       categoryForm.setFieldsValue({ enabled: true, sortOrder: 0 })
-      await load()
     } catch (saveError) {
       message.error(errorText(saveError))
     }
@@ -479,15 +480,14 @@ export function AdminTaxonomy() {
   async function saveTag(values: TagValues) {
     try {
       if (tagEditing) {
-        await updateTag(tagEditing.id, values)
+        await updateTagMutation.mutateAsync({ id: tagEditing.id, payload: values })
         message.success('标签已更新')
       } else {
-        await createTag(values)
+        await createTagMutation.mutateAsync(values)
         message.success('标签已创建')
       }
       setTagEditing(null)
       tagForm.resetFields()
-      await load()
     } catch (saveError) {
       message.error(errorText(saveError))
     }
@@ -498,9 +498,8 @@ export function AdminTaxonomy() {
       return
     }
     try {
-      await deleteCategory(item.id)
+      await deleteCategoryMutation.mutateAsync(item.id)
       message.success('分类已删除')
-      await load()
     } catch (deleteError) {
       message.error(errorText(deleteError))
     }
@@ -511,9 +510,8 @@ export function AdminTaxonomy() {
       return
     }
     try {
-      await deleteTag(item.id)
+      await deleteTagMutation.mutateAsync(item.id)
       message.success('标签已删除')
-      await load()
     } catch (deleteError) {
       message.error(errorText(deleteError))
     }
@@ -558,7 +556,11 @@ export function AdminTaxonomy() {
                 <Switch />
               </Form.Item>
             </div>
-            <Button htmlType="submit" type="primary">
+            <Button
+              htmlType="submit"
+              loading={createCategoryMutation.isPending || updateCategoryMutation.isPending}
+              type="primary"
+            >
               {categoryEditing ? '保存分类' : '新建分类'}
             </Button>
             {categoryEditing && (
@@ -596,7 +598,14 @@ export function AdminTaxonomy() {
                   >
                     编辑
                   </button>
-                  <button type="button" onClick={() => void removeCategory(item)}>
+                  <button
+                    disabled={
+                      deleteCategoryMutation.isPending &&
+                      deleteCategoryMutation.variables === item.id
+                    }
+                    type="button"
+                    onClick={() => void removeCategory(item)}
+                  >
                     删除
                   </button>
                 </div>
@@ -624,7 +633,11 @@ export function AdminTaxonomy() {
             >
               <Input />
             </Form.Item>
-            <Button htmlType="submit" type="primary">
+            <Button
+              htmlType="submit"
+              loading={createTagMutation.isPending || updateTagMutation.isPending}
+              type="primary"
+            >
               {tagEditing ? '保存标签' : '新建标签'}
             </Button>
             {tagEditing && (
@@ -657,7 +670,13 @@ export function AdminTaxonomy() {
                   >
                     编辑
                   </button>
-                  <button type="button" onClick={() => void removeTag(item)}>
+                  <button
+                    disabled={
+                      deleteTagMutation.isPending && deleteTagMutation.variables === item.id
+                    }
+                    type="button"
+                    onClick={() => void removeTag(item)}
+                  >
                     删除
                   </button>
                 </div>

@@ -7,6 +7,7 @@ import CustomMesh from './components/CustomMesh'
 import './index.scss'
 import BufferMesh from './components/BufferMesh'
 import GroundMesh from './components/GroundMesh'
+import FontMesh from './components/FontMesh'
 
 // const HDR_ENV_URL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancing_hall_1k.hdr'
 const HDR_ENV_URL = '/src/assets/threejs/envMap/historic_cloister_passage_2k.hdr'
@@ -57,12 +58,14 @@ function Scene() {
 
   return (
     <>
-      <pointLight castShadow position={[4, 6, 3]} intensity={80} />
+      <directionalLight castShadow position={[5, 5, 5]} />
+      {/* <pointLight castShadow position={[4, 6, 3]} intensity={80} /> */}
 
       <GroundMesh />
       <Cube />
       <CustomMesh position={[0, 4, 0]} />
       <BufferMesh />
+      <FontMesh />
 
       <OrbitControls enableDamping />
       <GizmoHelper alignment="bottom-right" margin={[80, 80]}>

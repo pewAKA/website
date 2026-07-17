@@ -72,6 +72,19 @@ export type ChangePasswordPayload = {
   newPassword: string
 }
 
+export type ArticleListParams = {
+  category?: string
+  tag?: string
+  page?: number
+  pageSize?: number
+}
+
+export type AdminArticleListParams = {
+  status?: string
+  page?: number
+  pageSize?: number
+}
+
 type LoginResponse = {
   token: string
   tokenType: string
@@ -97,21 +110,16 @@ async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>) {
   }
 }
 
-export function getArticles(params: {
-  category?: string
-  tag?: string
-  page?: number
-  pageSize?: number
-}) {
-  return unwrap(request.get<ApiResponse<PageResponse<Article>>>('/articles', { params }))
+export function getArticles(params: ArticleListParams, signal?: AbortSignal) {
+  return unwrap(request.get<ApiResponse<PageResponse<Article>>>('/articles', { params, signal }))
 }
 
-export function getArticle(slug: string) {
-  return unwrap(request.get<ApiResponse<Article>>(`/articles/${slug}`))
+export function getArticle(slug: string, signal?: AbortSignal) {
+  return unwrap(request.get<ApiResponse<Article>>(`/articles/${slug}`, { signal }))
 }
 
-export function getTaxonomy() {
-  return unwrap(request.get<ApiResponse<Taxonomy>>('/article-taxonomy'))
+export function getTaxonomy(signal?: AbortSignal) {
+  return unwrap(request.get<ApiResponse<Taxonomy>>('/article-taxonomy', { signal }))
 }
 
 export function login(username: string, password: string) {
@@ -122,12 +130,14 @@ export function changePassword(payload: ChangePasswordPayload) {
   return unwrap(request.put<ApiResponse<null>>('/auth/password', payload))
 }
 
-export function getAdminArticles(params: { status?: string; page?: number; pageSize?: number }) {
-  return unwrap(request.get<ApiResponse<PageResponse<Article>>>('/admin/articles', { params }))
+export function getAdminArticles(params: AdminArticleListParams, signal?: AbortSignal) {
+  return unwrap(
+    request.get<ApiResponse<PageResponse<Article>>>('/admin/articles', { params, signal }),
+  )
 }
 
-export function getAdminArticle(id: string) {
-  return unwrap(request.get<ApiResponse<Article>>(`/admin/articles/${id}`))
+export function getAdminArticle(id: string, signal?: AbortSignal) {
+  return unwrap(request.get<ApiResponse<Article>>(`/admin/articles/${id}`, { signal }))
 }
 
 export function createArticle(payload: ArticlePayload) {
@@ -150,12 +160,14 @@ export function deleteArticle(id: number) {
   return unwrap(request.delete<ApiResponse<null>>(`/admin/articles/${id}`))
 }
 
-export function getAdminCategories() {
-  return unwrap(request.get<ApiResponse<ArticleCategory[]>>('/admin/article-categories'))
+export function getAdminCategories(signal?: AbortSignal) {
+  return unwrap(
+    request.get<ApiResponse<ArticleCategory[]>>('/admin/article-categories', { signal }),
+  )
 }
 
-export function getAdminTags() {
-  return unwrap(request.get<ApiResponse<ArticleTag[]>>('/admin/article-tags'))
+export function getAdminTags(signal?: AbortSignal) {
+  return unwrap(request.get<ApiResponse<ArticleTag[]>>('/admin/article-tags', { signal }))
 }
 
 export function createCategory(payload: TaxonomyPayload) {
