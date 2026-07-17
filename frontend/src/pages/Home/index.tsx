@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import heroImage from '@/assets/hero.png'
+import { getAsset } from '@/three/assets/catalog'
 import './index.scss'
 
 const stackTags = ['React', 'TypeScript', 'Vite', 'Sass', 'Ant Design', 'Axios', 'R3F']
@@ -32,15 +32,15 @@ const hubLinks = [
 ]
 
 function Home() {
+  const heroImage = getAsset('home.hero').url
+
   return (
     <div className="home-page">
       <section className="home-hero">
         <div className="home-hero__content">
           <span className="home-hero__eyebrow">Personal knowledge hub</span>
           <h1>Lynco Hub</h1>
-          <p>
-            一个安静但可扩展的个人内容中枢，用来整理项目作品、技术文章、个人信息和后续构想。
-          </p>
+          <p>一个安静但可扩展的个人内容中枢，用来整理项目作品、技术文章、个人信息和后续构想。</p>
 
           <div className="home-hero__actions">
             <Link className="home-action home-action--primary" to="/works">

@@ -2,9 +2,11 @@ import { Text3D } from '@react-three/drei'
 import { useEffect, useRef } from 'react'
 import * as Three from 'three'
 import type { TextGeometry } from 'three/examples/jsm/Addons.js'
+import { useManagedFontUrl } from '@/three/assets'
 
 export default function FontMesh() {
   const textRef = useRef<Three.Mesh<TextGeometry, Three.Material>>(null)
+  const fontUrl = useManagedFontUrl('test.font.georgia')
   //初始化位置
   useEffect(() => {
     if (!textRef.current) return
@@ -20,7 +22,7 @@ export default function FontMesh() {
       receiveShadow
       castShadow
       ref={textRef}
-      font={'/src/assets/threejs/fonts/GEORGIA.json'}
+      font={fontUrl}
       size={1}
       curveSegments={2}
       bevelEnabled

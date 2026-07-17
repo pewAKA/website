@@ -1,16 +1,16 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import * as Three from 'three'
-
-const textureLoader = new Three.TextureLoader()
-const matcapTexture = textureLoader.load(
-  '/src/assets/threejs/matcap/80726C_DCDBD7_9AA6C2_B7BFCA-64px.png',
-)
+import { useManagedTexture } from '@/three/assets'
 
 export default function MatCapMesh() {
   const count = 500
   const meshRef = useRef<Three.InstancedMesh>(null)
+  const matcapTexture = useManagedTexture('test.matcap.soft-clay')
   const geometry = useMemo(() => new Three.TorusGeometry(0.2, 0.1, 10), [])
-  const material = useMemo(() => new Three.MeshMatcapMaterial({ matcap: matcapTexture }), [])
+  const material = useMemo(
+    () => new Three.MeshMatcapMaterial({ matcap: matcapTexture }),
+    [matcapTexture],
+  )
 
   useLayoutEffect(() => {
     if (!meshRef.current) return
@@ -31,14 +31,14 @@ export default function MatCapMesh() {
       meshRef.current.setMatrixAt(i, dummy.matrix)
     }
     meshRef.current.instanceMatrix.needsUpdate = true
-  }, [])
+  }, [count])
 
   useEffect(() => {
     return () => {
       geometry.dispose()
       material.dispose()
     }
-  }, [])
+  }, [geometry, material])
 
-  return <instancedMesh ref={meshRef} args={[geometry, material, count]} />
+  return <instancedMesh dispose={null} ref={meshRef} args={[geometry, material, count]} />
 }

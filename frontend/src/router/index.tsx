@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router'
+import { Suspense } from 'react'
 import App from '@/App'
 import About from '@/pages/About'
 import {
@@ -14,8 +15,8 @@ import ArticleDetail from '@/pages/ArticleDetail'
 import Home from '@/pages/Home'
 import NotFound from '@/pages/NotFound'
 import Roadmap from '@/pages/Roadmap'
+import TestPage from '@/pages/Test/lazy'
 import Works from '@/pages/Works'
-import TestPage from '@/pages/Test'
 
 // 主导航页面保持显式声明，方便后续接入权限、数据预取或页面级布局。
 export const router = createBrowserRouter([
@@ -49,7 +50,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'test',
-        element: <TestPage />,
+        element: (
+          <Suspense fallback={<main className="page-state">正在载入交互实验…</main>}>
+            <TestPage />
+          </Suspense>
+        ),
       },
       {
         path: '*',

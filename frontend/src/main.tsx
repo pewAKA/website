@@ -7,7 +7,9 @@ import zhCN from 'antd/locale/zh_CN'
 import { RouterProvider } from 'react-router/dom'
 import 'antd/dist/reset.css'
 import '@/styles/index.scss'
+import StartupPreloader from '@/components/StartupPreloader'
 import { queryClient } from '@/lib/queryClient'
+import { StartupPreloadProvider } from '@/providers/StartupPreloadProvider'
 import { router } from '@/router'
 
 createRoot(document.getElementById('root')!).render(
@@ -28,7 +30,10 @@ createRoot(document.getElementById('root')!).render(
           },
         }}
       >
-        <RouterProvider router={router} />
+        <StartupPreloadProvider>
+          <RouterProvider router={router} />
+          <StartupPreloader />
+        </StartupPreloadProvider>
       </ConfigProvider>
       {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>

@@ -1,17 +1,13 @@
-import { Canvas, useLoader, useThree } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
 import { GizmoHelper, GizmoViewport, OrbitControls } from '@react-three/drei'
 import { Suspense, useEffect } from 'react'
-import { EquirectangularReflectionMapping } from 'three'
-import { HDRLoader } from 'three/addons/loaders/HDRLoader.js'
+import { useSceneEnvironment } from '@/three/assets'
 import CustomMesh from './components/CustomMesh'
 import './index.scss'
 import BufferMesh from './components/BufferMesh'
 import GroundMesh from './components/GroundMesh'
 import FontMesh from './components/FontMesh'
 import MatCapMesh from './components/MatCapMesh'
-
-// const HDR_ENV_URL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancing_hall_1k.hdr'
-const HDR_ENV_URL = '/src/assets/threejs/envMap/historic_cloister_passage_2k.hdr'
 
 function TestPage() {
   return (
@@ -29,16 +25,11 @@ function TestPage() {
 function Scene() {
   // 1. 获取当前 Three.js 的 scene 对象
   const { scene } = useThree()
-
-  // 2. 使用 R3F 的 useLoader 结合 Three.js 的 HDRLoader 加载 HDR
-  const texture = useLoader(HDRLoader, HDR_ENV_URL)
+  const texture = useSceneEnvironment('test.environment.historic-cloister')
 
   // 3. 使用 useEffect 在贴图加载完成后应用到场景中
   useEffect(() => {
     if (texture) {
-      // 必须设置等距圆柱投影映射，否则 HDR 贴图会显示异常/变形
-      texture.mapping = EquirectangularReflectionMapping
-
       // 赋值给场景背景和环境光照
       scene.background = texture
       scene.environment = texture
