@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from 'react'
 import MeshObject from './MeshObject'
 // import { useFrame } from '@react-three/fiber'
-// import { useGSAP } from '@gsap/react'
-// import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
 import { folder, useControls } from 'leva'
 
 interface CustomMeshProps {
@@ -40,24 +40,24 @@ function CustomMesh({ position }: CustomMeshProps) {
   //   meshObject.mesh.position.y = Math.sin((Math.PI / 2) * state.clock.elapsedTime) + 4
   // })
 
-  // useGSAP(() => {
-  //   gsap.to(meshObject.mesh.rotation, {
-  //     y: '+=' + Math.PI,
-  //     duration: 2,
-  //     ease: 'none',
-  //     repeat: -1,
-  //   })
+  useGSAP(() => {
+    gsap.to(meshObject.mesh.rotation, {
+      y: '+=' + Math.PI,
+      duration: 2,
+      ease: 'none',
+      repeat: -1,
+    })
 
-  //   meshObject.mesh.position.y = 3
+    meshObject.mesh.position.y = 4
 
-  //   gsap.to(meshObject.mesh.position, {
-  //     duration: 2,
-  //     y: 5,
-  //     repeat: -1,
-  //     yoyo: true,
-  //     ease: 'sine.inOut',
-  //   })
-  // })
+    gsap.to(meshObject.mesh.position, {
+      duration: 2,
+      y: 5,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+    })
+  })
 
   //清理内存
   useEffect(() => {

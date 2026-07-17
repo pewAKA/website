@@ -8,6 +8,7 @@ import './index.scss'
 import BufferMesh from './components/BufferMesh'
 import GroundMesh from './components/GroundMesh'
 import FontMesh from './components/FontMesh'
+import MatCapMesh from './components/MatCapMesh'
 
 // const HDR_ENV_URL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancing_hall_1k.hdr'
 const HDR_ENV_URL = '/src/assets/threejs/envMap/historic_cloister_passage_2k.hdr'
@@ -15,7 +16,7 @@ const HDR_ENV_URL = '/src/assets/threejs/envMap/historic_cloister_passage_2k.hdr
 function TestPage() {
   return (
     <div className="test-page">
-      <Canvas shadows className="test-canvas" camera={{ position: [5, 5, 5] }}>
+      <Canvas shadows className="test-canvas" camera={{ position: [5, 5, 5], near: 0.1, far: 100 }}>
         {/* useLoader 内部会触发 Promise，需要用 Suspense 包裹以等待资源加载 */}
         <Suspense fallback={null}>
           <Scene />
@@ -66,6 +67,7 @@ function Scene() {
       <CustomMesh position={[0, 4, 0]} />
       <BufferMesh />
       <FontMesh />
+      <MatCapMesh />
 
       <OrbitControls enableDamping />
       <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
@@ -79,7 +81,7 @@ function Cube() {
   return (
     <mesh receiveShadow castShadow position={[0, 0, 0]}>
       <boxGeometry args={[5, 5, 5, 10, 10, 10]} />
-      <meshStandardMaterial color="#e2ad71" metalness={0.8} roughness={0.5} />
+      <meshStandardMaterial color="#797979" metalness={0.1} roughness={0.5} />
     </mesh>
   )
 }

@@ -29,7 +29,7 @@ export default function FontMesh() {
       bevelSegments={3}
     >
       Lynco Hub
-      <meshStandardMaterial />
+      <meshStandardMaterial color={'#9d93ad'} metalness={1} roughness={0} />
     </Text3D>
   )
 }
