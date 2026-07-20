@@ -18,6 +18,9 @@ import Roadmap from '@/pages/Roadmap'
 import TestPage from '@/pages/Test/lazy'
 import Works from '@/pages/Works'
 
+//作品菜单
+import GalaxyScene from '@/pages/Works/galaxy'
+
 // 主导航页面保持显式声明，方便后续接入权限、数据预取或页面级布局。
 export const router = createBrowserRouter([
   {
@@ -30,7 +33,16 @@ export const router = createBrowserRouter([
       },
       {
         path: 'works',
-        element: <Works />,
+        children: [
+          {
+            index: true,
+            element: <Works />,
+          },
+          {
+            path: 'galaxy',
+            element: <GalaxyScene />,
+          },
+        ],
       },
       {
         path: 'articles',
