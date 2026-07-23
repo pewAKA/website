@@ -62,4 +62,7 @@ export const assetUrls = {
       import.meta.url,
     ).href,
   },
+  starParticleTexture: {
+    map: new URL('../../assets/threejs/particle/star_07.png', import.meta.url).href
+  }
 } as const

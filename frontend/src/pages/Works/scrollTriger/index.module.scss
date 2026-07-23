@@ -1,0 +1,47 @@
+.pageContainer {
+  // 页面内容始终显示在三维场景上方。
+  position: relative;
+  z-index: 1;
+  background-color: transparent;
+
+  .segmentCard {
+    position: relative;
+    height: 100vh;
+    display: flex;
+
+    .text {
+      position: absolute;
+      top: 50%;
+      color: aliceblue;
+      transform: translateY(-50%);
+      font-size: 100px;
+      font-weight: 800;
+
+      &.text1 {
+        left: 15%;
+      }
+      &.text2 {
+        right: 15%;
+      }
+      &.text3 {
+        left: 15%;
+      }
+    }
+  }
+}
+
+.sceneContainer {
+  // 固定场景作为页面背景层，不遮挡或拦截前景内容。
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  .sceneCanvas {
+    width: 100%;
+    height: 100%;
+  }
+}

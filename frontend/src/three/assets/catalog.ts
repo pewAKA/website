@@ -1,6 +1,6 @@
 import { assetUrls } from './urls'
 
-export type SceneId = 'home' | 'test'
+export type SceneId = 'home' | 'test' | 'work'
 export type AssetKind = 'image' | 'texture' | 'environment' | 'font' | 'model'
 export type AssetResidency = 'startup' | 'critical' | 'optional'
 export type TextureColorSpace = 'srgb' | 'linear'
@@ -144,6 +144,14 @@ export const assetCatalog = {
     residency: 'optional',
     texture: { colorSpace: 'linear' },
   },
+  'work.scroll.particle': {
+    id: 'work.scroll.particle',
+    label: '粒子贴图',
+    kind: 'texture',
+    url: assetUrls.starParticleTexture.map,
+    scene: 'work',
+    residency: 'optional',
+  }
 } as const satisfies Record<string, AssetDefinition>
 
 export type AssetId = keyof typeof assetCatalog

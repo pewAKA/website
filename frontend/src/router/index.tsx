@@ -20,6 +20,7 @@ import Works from '@/pages/Works'
 
 //作品菜单
 import GalaxyScene from '@/pages/Works/galaxy'
+import ScrollScene from '@/pages/Works/scrollTriger'
 
 // 主导航页面保持显式声明，方便后续接入权限、数据预取或页面级布局。
 export const router = createBrowserRouter([
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
           {
             path: 'galaxy',
             element: <GalaxyScene />,
+          },
+          {
+            path: 'scroll',
+            element: <ScrollScene />,
           },
         ],
       },
