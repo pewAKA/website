@@ -10,11 +10,11 @@ export default function WavesScene() {
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uDepth: { value: 0.3 },
-      uFrequencey: { value: 2 },
-      uSpeed: { value: 2 },
-      uDeepColor: { value: '#020077' },
-      uSurfaceColor: { value: '#94d4ff' },
+      uDepth: { value: 2 },
+      uFrequencey: { value: 0.3 },
+      uSpeed: { value: 0 },
+      uDeepColor: { value: new Three.Color('#00049d') },
+      uSurfaceColor: { value: new Three.Color('#94d4ff') },
     }),
     [],
   )
@@ -25,9 +25,9 @@ export default function WavesScene() {
 
   useControls({
     uDepth: {
-      value: 0.3,
+      value: 2,
       min: 0,
-      max: 2,
+      max: 10,
       step: 0.01,
       onChange: (val) => {
         if (!materialRef.current) return
@@ -35,7 +35,7 @@ export default function WavesScene() {
       },
     },
     uFrequencey: {
-      value: 2,
+      value: 0.3,
       min: 0,
       max: 10,
       step: 0.01,
@@ -45,7 +45,7 @@ export default function WavesScene() {
       },
     },
     uSpeed: {
-      value: 2,
+      value: 0,
       min: 0,
       max: 10,
       step: 0.01,
@@ -54,11 +54,25 @@ export default function WavesScene() {
         materialRef.current.uniforms.uSpeed.value = val
       },
     },
+    uDeepColor: {
+      value: '#00049d',
+      onChange: (val) => {
+        if (!materialRef.current) return
+        materialRef.current.uniforms.uDeepColor.value = new Three.Color(val)
+      },
+    },
+    uSurfaceColor: {
+      value: '#94d4ff',
+      onChange: (val) => {
+        if (!materialRef.current) return
+        materialRef.current.uniforms.uSurfaceColor.value = new Three.Color(val)
+      },
+    },
   })
 
   return (
     <mesh rotation-x={-(Math.PI / 2)}>
-      <planeGeometry args={[10, 10, 128, 128]} />
+      <planeGeometry args={[20, 20, 1024, 1024]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={waveVertexShader}
