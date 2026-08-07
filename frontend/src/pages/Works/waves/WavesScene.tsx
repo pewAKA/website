@@ -1,5 +1,5 @@
-import waveVertexShader from './shaders/wave/vertex.glsl?raw'
-import waveFragmentShader from './shaders/wave/fragment.glsl?raw'
+import waveVertexShader from './shaders/wave/vertex.glsl'
+import waveFragmentShader from './shaders/wave/fragment.glsl'
 import * as Three from 'three'
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
