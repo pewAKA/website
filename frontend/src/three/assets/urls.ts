@@ -1,68 +1,30 @@
-/**
- * 资源地址统一使用静态 new URL 写法，确保 Vite 在生产构建时生成可部署的资源路径。
- */
+/** Three.js 运行时资源统一从 public 目录读取，构建后路径保持稳定。 */
 export const assetUrls = {
-  homeHero: new URL('../../assets/hero.png', import.meta.url).href,
+  homeHero: '/hero.png',
   environments: {
-    historicCloister: new URL(
-      '../../assets/threejs/envMap/historic_cloister_passage_2k.hdr',
-      import.meta.url,
-    ).href,
-    monochromeStudio: new URL(
-      '../../assets/threejs/envMap/monochrome_studio_02_1k.hdr',
-      import.meta.url,
-    ).href,
+    historicCloister: '/threejs/envMap/historic_cloister_passage_2k.hdr',
+    monochromeStudio: '/threejs/envMap/monochrome_studio_02_1k.hdr',
   },
   fonts: {
-    georgia: new URL('../../assets/threejs/fonts/GEORGIA.json', import.meta.url).href,
+    georgia: '/threejs/fonts/GEORGIA.json',
   },
   matcaps: {
-    softClay: new URL(
-      '../../assets/threejs/matcap/80726C_DCDBD7_9AA6C2_B7BFCA-64px.png',
-      import.meta.url,
-    ).href,
+    softClay: '/threejs/matcap/80726C_DCDBD7_9AA6C2_B7BFCA-64px.png',
   },
   tiles: {
-    color: new URL(
-      '../../assets/threejs/textures/Tiles141_1K-JPG/Tiles141_1K-JPG_Color.jpg',
-      import.meta.url,
-    ).href,
-    displacement: new URL(
-      '../../assets/threejs/textures/Tiles141_1K-JPG/Tiles141_1K-JPG_Displacement.jpg',
-      import.meta.url,
-    ).href,
-    normal: new URL(
-      '../../assets/threejs/textures/Tiles141_1K-JPG/Tiles141_1K-JPG_NormalGL.jpg',
-      import.meta.url,
-    ).href,
-    roughness: new URL(
-      '../../assets/threejs/textures/Tiles141_1K-JPG/Tiles141_1K-JPG_Roughness.jpg',
-      import.meta.url,
-    ).href,
+    color: '/threejs/textures/Tiles141_1K-JPG/Tiles141_1K-JPG_Color.jpg',
+    displacement: '/threejs/textures/Tiles141_1K-JPG/Tiles141_1K-JPG_Displacement.jpg',
+    normal: '/threejs/textures/Tiles141_1K-JPG/Tiles141_1K-JPG_NormalGL.jpg',
+    roughness: '/threejs/textures/Tiles141_1K-JPG/Tiles141_1K-JPG_Roughness.jpg',
   },
   metal: {
-    color: new URL(
-      '../../assets/threejs/textures/Metal049A_1K-JPG/Metal049A_1K-JPG_Color.jpg',
-      import.meta.url,
-    ).href,
-    displacement: new URL(
-      '../../assets/threejs/textures/Metal049A_1K-JPG/Metal049A_1K-JPG_Displacement.jpg',
-      import.meta.url,
-    ).href,
-    metalness: new URL(
-      '../../assets/threejs/textures/Metal049A_1K-JPG/Metal049A_1K-JPG_Metalness.jpg',
-      import.meta.url,
-    ).href,
-    normal: new URL(
-      '../../assets/threejs/textures/Metal049A_1K-JPG/Metal049A_1K-JPG_NormalGL.jpg',
-      import.meta.url,
-    ).href,
-    roughness: new URL(
-      '../../assets/threejs/textures/Metal049A_1K-JPG/Metal049A_1K-JPG_Roughness.jpg',
-      import.meta.url,
-    ).href,
+    color: '/threejs/textures/Metal049A_1K-JPG/Metal049A_1K-JPG_Color.jpg',
+    displacement: '/threejs/textures/Metal049A_1K-JPG/Metal049A_1K-JPG_Displacement.jpg',
+    metalness: '/threejs/textures/Metal049A_1K-JPG/Metal049A_1K-JPG_Metalness.jpg',
+    normal: '/threejs/textures/Metal049A_1K-JPG/Metal049A_1K-JPG_NormalGL.jpg',
+    roughness: '/threejs/textures/Metal049A_1K-JPG/Metal049A_1K-JPG_Roughness.jpg',
   },
   starParticleTexture: {
-    map: new URL('../../assets/threejs/particle/star_07.png', import.meta.url).href
-  }
+    map: '/threejs/particle/star_07.png',
+  },
 } as const

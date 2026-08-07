@@ -1,3 +1,5 @@
+'use client'
+
 import { useStartupPreload } from '@/providers/startupPreloadContext'
 import './index.scss'
 

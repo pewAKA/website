@@ -180,8 +180,29 @@ img {
   max-width: 100%;
 }
 
+body > main,
 #root {
   min-height: 100svh;
+}
+
+.page-state {
+  display: grid;
+  min-height: 100svh;
+  place-content: center;
+  gap: 16px;
+  padding: var(--layout-content-inset);
+  color: var(--color-muted);
+  text-align: center;
+
+  button {
+    justify-self: center;
+    padding: 10px 18px;
+    border: 1px solid var(--color-line);
+    border-radius: 8px;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    cursor: pointer;
+  }
 }
 
 :focus-visible {

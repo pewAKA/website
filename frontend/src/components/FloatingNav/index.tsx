@@ -1,5 +1,8 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { NavLink, useLocation } from 'react-router'
 import './index.scss'
 
 type ThemeMode = 'light' | 'dark'
@@ -25,8 +28,12 @@ function getInitialTheme(): ThemeMode {
 
 function FloatingNav() {
   const [open, setOpen] = useState(false)
-  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme)
-  const location = useLocation()
+  const [theme, setTheme] = useState<ThemeMode>('light')
+  const pathname = usePathname()
+
+  useEffect(() => {
+    setTheme(getInitialTheme())
+  }, [])
 
   // 将主题写到 html 属性上，和全局 CSS token 的明暗模式保持同步。
   useEffect(() => {
@@ -37,7 +44,7 @@ function FloatingNav() {
   // 路由切换后自动收起菜单，避免展开面板遮挡新页面标题。
   useEffect(() => {
     setOpen(false)
-  }, [location.pathname])
+  }, [pathname])
 
   // 展开状态下支持 Escape 收起，键盘用户不用移动焦点也能关闭菜单。
   useEffect(() => {
@@ -89,18 +96,19 @@ function FloatingNav() {
 
       <div className="floating-nav__panel" id="floating-nav-panel">
         {navItems.map((item) => (
-          <NavLink
+          <Link
             key={item.path}
-            className={({ isActive }) =>
-              `floating-nav__link${isActive ? ' floating-nav__link--active' : ''}`
-            }
-            end={item.path === '/'}
-            to={item.path}
+            className={`floating-nav__link${
+              pathname === item.path || (item.path !== '/' && pathname.startsWith(`${item.path}/`))
+                ? ' floating-nav__link--active'
+                : ''
+            }`}
+            href={item.path}
             onClick={() => setOpen(false)}
           >
             <span>{item.label}</span>
             <small>{item.path}</small>
-          </NavLink>
+          </Link>
         ))}
       </div>
     </nav>

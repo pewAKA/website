@@ -15,7 +15,7 @@ export function clearAdminToken() {
 }
 
 const request = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '/api',
   timeout: 10_000,
 })
 
@@ -31,7 +31,13 @@ request.interceptors.request.use((config) => {
 request.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    // Centralize response errors here so pages can stay focused on UI state.
+    // 令牌失效时统一结束当前后台会话，避免各页面重复处理 401。
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      clearAdminToken()
+      if (window.location.pathname !== '/admin/login') {
+        window.location.assign('/admin/login')
+      }
+    }
     return Promise.reject(error)
   },
 )

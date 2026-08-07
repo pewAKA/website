@@ -1,12 +1,8 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { preloadStartupAssets } from '@/three/assets/startup'
-import { StartupPreloadContext, type StartupPreloadState } from './startupPreloadContext'
+'use client'
 
-function isInitialHomeEntry() {
-  const basePath = import.meta.env.BASE_URL.replace(/\/$/, '')
-  const currentPath = window.location.pathname
-  return currentPath === `${basePath}/` || currentPath === basePath
-}
+import { usePathname } from 'next/navigation'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { StartupPreloadContext, type StartupPreloadState } from './startupPreloadContext'
 
 function createLoadingState(): StartupPreloadState {
   return {
@@ -21,7 +17,8 @@ function createLoadingState(): StartupPreloadState {
 }
 
 export function StartupPreloadProvider({ children }: { children: ReactNode }) {
-  const shouldPreload = useRef(isInitialHomeEntry()).current
+  const pathname = usePathname()
+  const shouldPreload = useRef(pathname === '/').current
   const hasStarted = useRef(false)
   const runId = useRef(0)
   const hideTimer = useRef<number | undefined>(undefined)
@@ -51,7 +48,8 @@ export function StartupPreloadProvider({ children }: { children: ReactNode }) {
     }
     setState(createLoadingState())
 
-    void preloadStartupAssets((progress) => {
+    // 仅首页真正开始加载时才引入 Three.js 资源模块，避免进入公共客户端包。
+    void import('@/three/assets/startup').then(({ preloadStartupAssets }) => preloadStartupAssets((progress) => {
       if (runId.current !== currentRun) {
         return
       }
@@ -63,7 +61,7 @@ export function StartupPreloadProvider({ children }: { children: ReactNode }) {
         total: progress.total,
         currentAsset: progress.currentAsset,
       }))
-    }).then(({ failures }) => {
+    })).then(({ failures }) => {
       if (runId.current !== currentRun) {
         return
       }

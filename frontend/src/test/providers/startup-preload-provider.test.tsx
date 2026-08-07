@@ -4,6 +4,11 @@ import StartupPreloader from '@/components/StartupPreloader'
 import { StartupPreloadProvider } from '@/providers/StartupPreloadProvider'
 
 const mockPreloadStartupAssets = vi.hoisted(() => vi.fn())
+const mockPathname = vi.hoisted(() => ({ value: '/' }))
+
+vi.mock('next/navigation', () => ({
+  usePathname: () => mockPathname.value,
+}))
 
 vi.mock('@/three/assets/startup', () => ({
   preloadStartupAssets: mockPreloadStartupAssets,
@@ -19,7 +24,7 @@ function renderPreloader() {
 
 describe('StartupPreloadProvider', () => {
   beforeEach(() => {
-    window.history.replaceState({}, '', '/')
+    mockPathname.value = '/'
     mockPreloadStartupAssets.mockReset()
   })
 
@@ -36,8 +41,8 @@ describe('StartupPreloadProvider', () => {
 
     renderPreloader()
 
-    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100')
     expect(await screen.findByText('资源准备完成')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100')
     expect(screen.getByText('100% · 1 / 1')).toBeInTheDocument()
   })
 
@@ -72,7 +77,7 @@ describe('StartupPreloadProvider', () => {
   })
 
   it('直接进入非首页路径时不启动预载', () => {
-    window.history.replaceState({}, '', '/articles')
+    mockPathname.value = '/articles'
 
     renderPreloader()
 

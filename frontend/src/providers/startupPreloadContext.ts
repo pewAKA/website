@@ -1,5 +1,12 @@
+'use client'
+
 import { createContext, useContext } from 'react'
-import type { StartupPreloadFailure } from '@/three/assets/startup'
+import type { AssetDefinition } from '@/three/assets/catalog'
+
+export type StartupPreloadFailure = {
+  asset: AssetDefinition
+  error: unknown
+}
 
 export type StartupPreloadPhase = 'loading' | 'complete' | 'error' | 'skipped'
 

@@ -40,7 +40,7 @@ app:
     secret: ${APP_JWT_SECRET}
     expiration: PT12H
   cors:
-    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000,http://127.0.0.1:3000}
   bootstrap:
     admin-username: ${APP_BOOTSTRAP_ADMIN_USERNAME:admin}
     admin-password: ${APP_BOOTSTRAP_ADMIN_PASSWORD:}
@@ -48,4 +48,4 @@ app:
     # 容器部署时由 compose 覆盖为 /app/uploads；本地默认保存在后端工作目录下。
     media-root: ${APP_MEDIA_ROOT:./uploads}
     media-public-path: ${APP_MEDIA_PUBLIC_PATH:/media}
-    site-url: ${APP_SITE_URL:http://localhost:5173}
+    site-url: ${APP_SITE_URL:http://localhost:3000}

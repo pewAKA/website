@@ -39,7 +39,7 @@ mvn spring-boot:run
 
 ## 部署
 
-服务器部署采用 compose.yaml 运行应用容器，使用宿主机的原生 MySQL。部署前请将 .env 放入部署目录，执行 docker compose up -d --build，并通过 Nginx 将 /api 反向代理到 127.0.0.1:8080。
+服务器部署采用 compose.yaml 同时运行 Spring Boot 与 Next.js standalone 容器，并使用宿主机的原生 MySQL。部署前请将 .env 放入部署目录，执行 docker compose up -d --build；Nginx 将 `/api`、`/media`、`/sitemap.xml` 转发至 Spring Boot，其余页面转发至 127.0.0.1:3000。
 
 ## 本地通过 SSH 隧道连接服务器数据库
 
@@ -55,7 +55,7 @@ mvn spring-boot:run
 .\scripts\start-local-remote-db.ps1
 ~~~
 
-启动脚本会读取被 Git 忽略的 .env.local，并将服务启动在 http://127.0.0.1:8081。此模式会访问服务器的 personal_website 数据库，请谨慎执行写操作和数据库迁移。
+启动脚本会读取被 Git 忽略的 .env.local，并将服务启动在 http://127.0.0.1:8081。Next.js 开发服务器运行在 http://localhost:3000，并通过同源 `/api` 转发请求。此模式会访问服务器的 personal_website 数据库，请谨慎执行写操作和数据库迁移。
 
 IDEA 直接运行时，Spring Boot 也会自动读取 .env.local；此时只需保持 SSH 隧道脚本运行。
 

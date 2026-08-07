@@ -13,3 +13,19 @@ services:
       # 生产环境请把 APP_MEDIA_HOST_PATH 指向 Nginx 可读取且会备份的绝对目录。
       - ${APP_MEDIA_HOST_PATH:-./data/uploads}:/app/uploads
     restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../frontend
+      args:
+        SITE_URL: ${APP_SITE_URL}
+        API_ORIGIN: http://127.0.0.1:8080
+    container_name: personal-website-frontend
+    network_mode: host
+    environment:
+      SITE_URL: ${APP_SITE_URL}
+      API_ORIGIN: http://127.0.0.1:8080
+      NEXT_PUBLIC_API_BASE_URL: /api
+    depends_on:
+      - api
+    restart: unless-stopped

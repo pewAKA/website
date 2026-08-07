@@ -1,7 +1,6 @@
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { AdminSecurity } from '@/pages/Admin/Security'
+import { AdminSecurity } from '@/features/Admin/Security'
 import { changePassword } from '@/services/articles'
 import { clearAdminToken } from '@/services/request'
 import { renderWithQueryClient } from '@/test/renderWithQueryClient'
@@ -16,15 +15,15 @@ vi.mock('@/services/request', () => ({
 
 const mockChangePassword = vi.mocked(changePassword)
 const mockClearAdminToken = vi.mocked(clearAdminToken)
+const replace = vi.hoisted(() => vi.fn())
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ replace }),
+}))
 
 function renderSecurityPage() {
   return renderWithQueryClient(
-    <MemoryRouter initialEntries={['/admin/security']}>
-      <Routes>
-        <Route path="/admin/security" element={<AdminSecurity />} />
-        <Route path="/admin/login" element={<p>登录页</p>} />
-      </Routes>
-    </MemoryRouter>,
+    <AdminSecurity />,
   )
 }
 
@@ -66,7 +65,7 @@ describe('AdminSecurity', () => {
     )
     expect(mockClearAdminToken).toHaveBeenCalledOnce()
     expect(queryClient.getQueryData(['admin', 'articles'])).toBeUndefined()
-    expect(await screen.findByText('登录页')).toBeInTheDocument()
+    expect(replace).toHaveBeenCalledWith('/admin/login?passwordChanged=1')
   })
 
   it('展示接口返回的错误信息', async () => {
