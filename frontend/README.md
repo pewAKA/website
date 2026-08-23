@@ -5,17 +5,19 @@
 ## 开发命令
 
 ```bash
-pnpm install
-pnpm dev
-pnpm test
-pnpm test:integration
-pnpm typecheck
-pnpm lint
-pnpm build
-pnpm start
+npm install
+npm run dev
+npm test
+npm run test:integration
+npm run typecheck
+npm run lint
+npm run build
+npm start
 ```
 
 开发地址为 `http://localhost:3000`。页面、后台 API、鉴权、健康检查和 sitemap 全部由 Next.js 提供；MySQL 与上传目录仍是外部持久化资源。
+
+Windows 开发环境下，`npm run dev` 会读取 `.env.local` 的 `DB_TUNNEL_*` 配置，自动复用或后台创建 SSH 数据库隧道，再启动 Next.js；退出时仅关闭本次命令创建的隧道。无需数据库隧道时，可设置 `DB_TUNNEL_ENABLED=false`，或直接运行 `npm run dev:next`。
 
 ## 环境变量
 
@@ -39,9 +41,9 @@ TZ=Asia/Shanghai
 
 ## 数据库与管理员
 
-- `pnpm db:baseline`：只在数据库副本上反向生成既有业务表基线，用于人工审计。
-- `pnpm db:migrate`：执行仓库内经过审查的迁移 SQL；生产环境禁止 `drizzle-kit push`。
-- `pnpm auth:create-admin --email ... --name ... --role admin --data '{"username":"admin"}'`：交互式创建新管理员。
+- `npm run db:baseline`：只在数据库副本上反向生成既有业务表基线，用于人工审计。
+- `npm run db:migrate`：执行仓库内经过审查的迁移 SQL；生产环境禁止 `drizzle-kit push`。
+- `npm run auth:create-admin -- --email ... --name ... --role admin --data '{"username":"admin"}'`：交互式创建新管理员。
 
 ## 生产部署
 

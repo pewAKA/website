@@ -10,7 +10,7 @@
 
    ```bash
    cd frontend
-   DATABASE_URL='mysql://.../personal_website_copy' pnpm db:baseline
+   DATABASE_URL='mysql://.../personal_website_copy' npm run db:baseline
    ```
 
    `db:baseline` 的结果会写入 `frontend/drizzle/baseline`，只用于审计既有业务表，不作为生产迁移执行。生产环境禁止使用 `drizzle-kit push`。
@@ -18,13 +18,13 @@
 4. 执行已审查的 Auth 表迁移：
 
    ```bash
-   docker compose --profile tools run --rm tools pnpm db:migrate
+   docker compose --profile tools run --rm tools npm run db:migrate
    ```
 
 5. 交互式创建新管理员；密码不会写入环境变量：
 
    ```bash
-   docker compose --profile tools run --rm tools pnpm auth:create-admin --email admin@example.com --name Admin --role admin --data '{"username":"admin"}'
+   docker compose --profile tools run --rm tools npm run auth:create-admin -- --email admin@example.com --name Admin --role admin --data '{"username":"admin"}'
    ```
 
 6. 启动并检查：
@@ -43,7 +43,7 @@
 ```bash
 docker compose -f deploy/compose.test.yaml up -d --wait
 cd frontend
-TEST_DATABASE_URL='mysql://website_test:website_test_password@127.0.0.1:3308/personal_website_test' pnpm test:integration
+TEST_DATABASE_URL='mysql://website_test:website_test_password@127.0.0.1:3308/personal_website_test' npm run test:integration
 docker compose -f ../deploy/compose.test.yaml down
 ```
 

@@ -3,9 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "packageManager": "pnpm@11.7.0",
+  "packageManager": "npm@10.9.2",
   "scripts": {
-    "dev": "next dev",
+    "dev": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev-with-db.ps1",
+    "dev:next": "next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
@@ -56,7 +57,7 @@
     "@types/node": "^24.13.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@types/three": "^0.185.1",
+    "@types/three": "0.185.1",
     "auth": "^1.7.1",
     "drizzle-kit": "^0.31.10",
     "jsdom": "^29.1.1",
@@ -67,5 +68,8 @@
     "tsx": "^4.23.12",
     "typescript": "~6.0.2",
     "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "style-to-js@^1.0.0": "1.1.21"
   }
 }
