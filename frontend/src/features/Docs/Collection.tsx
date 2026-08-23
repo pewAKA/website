@@ -70,7 +70,7 @@ export default function DocsCollection({
               <article>
                 <div className="docs-collection__meta">
                   <Link href={getCategoryHref(document.category)}>
-                    {category?.name || document.category}
+                    {document.categoryName || category?.name || document.category}
                   </Link>
                   <time dateTime={document.updatedAt}>{formatShortDate(document.updatedAt)}</time>
                   <span>{document.readingMinutes} min</span>

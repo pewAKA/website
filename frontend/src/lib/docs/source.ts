@@ -1,20 +1,23 @@
 import { structure } from 'fumadocs-core/mdx-plugins'
 import type { DynamicSource, VirtualFile } from 'fumadocs-core/source'
 import { dynamicLoader } from 'fumadocs-core/source/dynamic'
-import { documentCategories, portalDocument } from './mock-documents'
-import { mockDocumentRepository } from './repository'
-import type { DocumentMetaData, DocumentPageData } from './types'
+import { portalDocument } from './mock-documents'
+import { createDocumentCategories } from './repository'
+import type { DocumentMetaData, DocumentPageData, DocumentRepository } from './types'
+import { databaseDocumentRepository } from '@/server/repositories/document-repository'
 
 type DocsSourceConfig = {
   pageData: DocumentPageData
   metaData: DocumentMetaData
 }
 
-function createDocumentSource(): DynamicSource<DocsSourceConfig> {
+function createDocumentSource(repository: DocumentRepository): DynamicSource<DocsSourceConfig> {
   return {
     cache: 'memory',
+    staleTime: 30_000,
     async files() {
-      const documents = await mockDocumentRepository.list()
+      const documents = await repository.list()
+      const categories = createDocumentCategories(documents)
       // 将 Repository 记录适配为 Fumadocs 虚拟文件；页面不感知真实数据源的实现。
       const files: VirtualFile<DocsSourceConfig>[] = [
         {
@@ -32,12 +35,12 @@ function createDocumentSource(): DynamicSource<DocsSourceConfig> {
           data: {
             title: '工程笔记',
             description: portalDocument.description,
-            pages: ['index', ...documentCategories.map((category) => category.slug)],
+            pages: ['index', ...categories.map((category) => category.slug)],
           },
         },
       ]
 
-      for (const category of documentCategories.toSorted((a, b) => a.order - b.order)) {
+      for (const category of categories) {
         const categoryDocuments = documents.filter(
           (document) => document.category === category.slug,
         )
@@ -70,10 +73,15 @@ function createDocumentSource(): DynamicSource<DocsSourceConfig> {
   }
 }
 
-const documentLoader = dynamicLoader(createDocumentSource(), {
+const documentLoader = dynamicLoader(createDocumentSource(databaseDocumentRepository), {
   baseUrl: '/articles',
 })
 
 export function getDocsSource() {
   return documentLoader.get()
+}
+
+/** 测试可注入内存 Repository，不需要连接真实数据库。 */
+export function getDocsSourceForRepository(repository: DocumentRepository) {
+  return dynamicLoader(createDocumentSource(repository), { baseUrl: '/articles' }).get()
 }

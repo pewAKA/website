@@ -1,5 +1,5 @@
 import { documentCategories, mockDocuments } from './mock-documents'
-import type { DocumentRecord, DocumentRepository, DocumentTag } from './types'
+import type { DocumentCategory, DocumentRecord, DocumentRepository, DocumentTag } from './types'
 
 function pathKey(slugs: string[]) {
   return slugs.join('/')
@@ -9,7 +9,7 @@ function normalizeTaxonomyValue(value: string) {
   return value.trim().toLocaleLowerCase('en-US')
 }
 
-function sortByUpdatedAt(documents: DocumentRecord[]) {
+export function sortByUpdatedAt(documents: DocumentRecord[]) {
   return documents.toSorted((left, right) => right.updatedAt.localeCompare(left.updatedAt))
 }
 
@@ -65,6 +65,24 @@ export function getTagHref(tag: string) {
 
 export function getDocumentCategory(categorySlug: string) {
   return documentCategories.find((category) => category.slug === categorySlug)
+}
+
+/** 合并产品内置分类说明和数据库中的新分类，保证后台新建分类也能进入页面树。 */
+export function createDocumentCategories(documents: DocumentRecord[]): DocumentCategory[] {
+  const categories = new Map(documentCategories.map((category) => [category.slug, category]))
+
+  for (const document of documents) {
+    if (!categories.has(document.category)) {
+      categories.set(document.category, {
+        slug: document.category,
+        name: document.categoryName || document.category,
+        description: `收录 ${document.categoryName || document.category} 分类下的工程记录。`,
+        order: categories.size + 1,
+      })
+    }
+  }
+
+  return [...categories.values()].toSorted((left, right) => left.order - right.order)
 }
 
 export function createDocumentTags(documents: DocumentRecord[]): DocumentTag[] {

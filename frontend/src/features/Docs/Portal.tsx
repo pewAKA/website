@@ -1,8 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { DocsPage } from 'fumadocs-ui/layouts/docs/page'
-import { documentCategories } from '@/lib/docs/mock-documents'
 import {
+  createDocumentCategories,
   createDocumentTags,
   getCategoryHref,
   getDocumentCategory,
@@ -22,6 +22,7 @@ function formatShortDate(value: string) {
 export default function DocsPortal({ documents }: { documents: DocumentRecord[] }) {
   const recent = documents.toSorted((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 3)
   const tags = createDocumentTags(documents)
+  const categories = createDocumentCategories(documents)
   const lead = recent[0]
 
   return (
@@ -38,8 +39,8 @@ export default function DocsPortal({ documents }: { documents: DocumentRecord[] 
           <p>Engineering field notes / 2026</p>
           <h1>把实现过程，整理成下一次能直接找到的答案。</h1>
           <span>
-            这里记录 Next.js、实时图形和交互工程中的具体取舍。内容来自可替换的 Mock
-            数据层，用于验证未来文档系统的完整形态。
+            这里记录 Next.js、实时图形和交互工程中的具体取舍。内容由管理后台与数据库统一维护，
+            搜索、分类和首页预览共享同一份公开数据源。
           </span>
         </div>
         <dl className="docs-portal__ledger" aria-label="文档概览">
@@ -49,7 +50,7 @@ export default function DocsPortal({ documents }: { documents: DocumentRecord[] 
           </div>
           <div>
             <dt>Tracks</dt>
-            <dd>{String(documentCategories.length).padStart(2, '0')}</dd>
+            <dd>{String(categories.length).padStart(2, '0')}</dd>
           </div>
           <div>
             <dt>Updated</dt>
@@ -82,7 +83,9 @@ export default function DocsPortal({ documents }: { documents: DocumentRecord[] 
               )}
               <div className="docs-feature__content">
                 <div>
-                  <span>{getDocumentCategory(lead.category)?.name}</span>
+                  <span>
+                    {lead.categoryName || getDocumentCategory(lead.category)?.name || lead.category}
+                  </span>
                   <time dateTime={lead.updatedAt}>更新于 {formatShortDate(lead.updatedAt)}</time>
                 </div>
                 <h3>{lead.title}</h3>
@@ -97,7 +100,11 @@ export default function DocsPortal({ documents }: { documents: DocumentRecord[] 
                   <Link href={getDocumentHref(document)}>
                     <span>{String(index + 2).padStart(2, '0')}</span>
                     <div>
-                      <small>{getDocumentCategory(document.category)?.name}</small>
+                      <small>
+                        {document.categoryName ||
+                          getDocumentCategory(document.category)?.name ||
+                          document.category}
+                      </small>
                       <h3>{document.title}</h3>
                       <p>{document.description}</p>
                     </div>
@@ -116,7 +123,7 @@ export default function DocsPortal({ documents }: { documents: DocumentRecord[] 
           <h2 id="tracks-title">按问题域浏览</h2>
         </header>
         <ol>
-          {documentCategories.map((category, categoryIndex) => {
+          {categories.map((category, categoryIndex) => {
             const categoryDocuments = documents.filter(
               (document) => document.category === category.slug,
             )
@@ -167,8 +174,8 @@ export default function DocsPortal({ documents }: { documents: DocumentRecord[] 
       </section>
 
       <footer className="docs-portal__footer">
-        <span>Mock dataset · 2026.08</span>
-        <p>当前内容用于验证信息架构、阅读密度与搜索体验，后续可直接替换为后台数据源。</p>
+        <span>Database collection · 2026.08</span>
+        <p>公开文档、分类、标签与全文搜索现在统一读取 MySQL 中已发布的内容。</p>
       </footer>
     </DocsPage>
   )

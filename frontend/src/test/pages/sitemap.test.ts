@@ -1,12 +1,14 @@
 import { describe, expect, it, vi } from 'vitest'
-import sitemap from '@/app/sitemap'
+import { createSitemap } from '@/app/sitemap'
 import { mockDocumentRepository } from '@/lib/docs/repository'
 
+vi.mock('server-only', () => ({}))
+
 describe('sitemap', () => {
-  it('仅由固定路由和 Mock 文档构建，不请求后端文章接口', async () => {
+  it('由固定路由和注入的文档仓库构建，不请求 HTTP 接口', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch')
     const documents = await mockDocumentRepository.list()
-    const entries = await sitemap()
+    const entries = await createSitemap(mockDocumentRepository)
     const urls = entries.map((entry) => entry.url)
 
     expect(urls).toContain('http://localhost:3000/articles')
@@ -17,4 +19,3 @@ describe('sitemap', () => {
     fetchSpy.mockRestore()
   })
 })
-

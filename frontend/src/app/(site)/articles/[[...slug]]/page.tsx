@@ -12,18 +12,18 @@ import Link from 'next/link'
 import { getDocsMdxComponents } from '@/components/DocsMdx'
 import DocsCollection from '@/features/Docs/Collection'
 import DocsPortal from '@/features/Docs/Portal'
-import { documentCategories } from '@/lib/docs/mock-documents'
 import {
+  createDocumentCategories,
+  createDocumentTags,
   getCategoryHref,
   getDocumentCategory,
-  getDocumentTag,
-  getDocumentTags,
   getTagHref,
-  mockDocumentRepository,
 } from '@/lib/docs/repository'
 import { getDocsSource } from '@/lib/docs/source'
+import { databaseDocumentRepository } from '@/server/repositories/document-repository'
 
 const compiler = createCompiler()
+export const dynamic = 'force-dynamic'
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat('zh-CN', {
@@ -44,40 +44,33 @@ async function resolveCollection(slugs: string[]) {
   if (slugs.length !== 2) return undefined
 
   if (slugs[0] === 'categories') {
-    const category = getDocumentCategory(slugs[1])
+    const documents = await databaseDocumentRepository.list()
+    const category = createDocumentCategories(documents).find((item) => item.slug === slugs[1])
     if (!category) return undefined
     return {
       kind: 'category' as const,
       title: category.name,
       description: category.description,
       canonical: getCategoryHref(category.slug),
-      documents: await mockDocumentRepository.listByCategory(category.slug),
+      documents: await databaseDocumentRepository.listByCategory(category.slug),
     }
   }
 
   if (slugs[0] === 'tags') {
-    const tag = await getDocumentTag(slugs[1])
+    const tag = createDocumentTags(await databaseDocumentRepository.list()).find(
+      (item) => item.slug === slugs[1],
+    )
     if (!tag) return undefined
     return {
       kind: 'tag' as const,
       title: tag.name,
       description: `汇集带有 ${tag.name} 标签的实现记录，跨分类查看相关问题与解决路径。`,
       canonical: getTagHref(tag.name),
-      documents: await mockDocumentRepository.listByTag(tag.name),
+      documents: await databaseDocumentRepository.listByTag(tag.name),
     }
   }
 
   return undefined
-}
-
-export async function generateStaticParams() {
-  const source = await getDocsSource()
-  const tags = await getDocumentTags()
-  return [
-    ...source.generateParams(),
-    ...documentCategories.map((category) => ({ slug: ['categories', category.slug] })),
-    ...tags.map((tag) => ({ slug: ['tags', tag.slug] })),
-  ]
 }
 
 export async function generateMetadata({
@@ -114,7 +107,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug?:
   const slugs = (await params).slug ?? []
 
   if (slugs.length === 0) {
-    return <DocsPortal documents={await mockDocumentRepository.list()} />
+    return <DocsPortal documents={await databaseDocumentRepository.list()} />
   }
 
   const collection = await resolveCollection(slugs)
@@ -130,14 +123,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug?:
     source: page.data.content,
     filePath: `${slugs.join('/')}.mdx`,
   })
-  const category = getDocumentCategory(page.data.category)
+  const categoryName =
+    page.data.categoryName || getDocumentCategory(page.data.category)?.name || page.data.category
 
   return (
     <DocsPage className="docs-article" toc={toc}>
       <div className="docs-article__eyebrow">
-        <Link href={getCategoryHref(page.data.category)}>
-          {category?.name || page.data.category}
-        </Link>
+        <Link href={getCategoryHref(page.data.category)}>{categoryName}</Link>
         <span>{formatDate(page.data.publishedAt)}</span>
         <span>{page.data.readingMinutes} 分钟阅读</span>
       </div>

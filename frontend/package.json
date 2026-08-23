@@ -15,6 +15,7 @@
     "db:generate": "drizzle-kit generate",
     "db:baseline": "drizzle-kit pull --config drizzle.baseline.config.ts",
     "db:migrate": "tsx scripts/migrate.ts",
+    "docs:import-mock": "tsx scripts/import-mock-documents.ts",
     "db:check": "drizzle-kit check",
     "auth:create-admin": "auth create-admin --config ./src/server/auth/auth.ts",
     "test:integration": "vitest run --config vitest.integration.config.ts",

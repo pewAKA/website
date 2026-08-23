@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import Home from '@/features/Home'
-import { getDocumentCategory, getDocumentHref, getRecentDocuments } from '@/lib/docs/repository'
+import { getDocumentCategory, getDocumentHref } from '@/lib/docs/repository'
+import { getRecentDatabaseDocuments } from '@/server/repositories/document-repository'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: '首页',
@@ -9,12 +12,13 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const articles = (await getRecentDocuments(2)).map((document) => ({
+  const articles = (await getRecentDatabaseDocuments(2)).map((document) => ({
     id: document.id,
     title: document.title,
     href: getDocumentHref(document),
     publishedAt: document.publishedAt,
-    categoryName: getDocumentCategory(document.category)?.name || document.category,
+    categoryName:
+      document.categoryName || getDocumentCategory(document.category)?.name || document.category,
   }))
 
   return <Home articles={articles} />

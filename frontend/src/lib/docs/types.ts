@@ -19,6 +19,8 @@ export type DocumentRecord = {
   title: string
   description: string
   category: string
+  /** 数据库分类展示名；本地 Mock 可继续通过静态分类配置补齐。 */
+  categoryName?: string
   tags: string[]
   publishedAt: string
   updatedAt: string

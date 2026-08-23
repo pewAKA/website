@@ -1,11 +1,6 @@
 import 'server-only'
 import { asc, count, desc, eq, inArray, sql } from 'drizzle-orm'
-import type {
-  Article,
-  ArticleCategory,
-  ArticleTag,
-  PageResponse,
-} from '@/lib/articles/types'
+import type { Article, ArticleCategory, ArticleTag, PageResponse } from '@/lib/articles/types'
 import { db } from '@/server/db/client'
 import {
   articleCategories,
@@ -13,10 +8,8 @@ import {
   articles,
   articleTags,
 } from '@/server/db/schema/business'
-import type {
-  ArticleUpsertInput,
-  TaxonomyUpsertInput,
-} from '@/server/validation/articles'
+import { articleDocumentMetadata } from '@/server/db/schema/documents'
+import type { ArticleUpsertInput, TaxonomyUpsertInput } from '@/server/validation/articles'
 import { ApiError } from '@/server/http/errors'
 
 type ArticleStatus = Article['status']
@@ -98,7 +91,11 @@ async function hydrateArticle(row: NonNullable<SelectedArticle>): Promise<Articl
 }
 
 export interface ArticleRepository {
-  listAdmin(status: ArticleStatus | undefined, page: number, pageSize: number): Promise<PageResponse<Article>>
+  listAdmin(
+    status: ArticleStatus | undefined,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<Article>>
   findArticleById(id: number): Promise<Article | undefined>
   findCategoryById(id: number): Promise<ArticleCategory | undefined>
   countTagsByIds(ids: number[]): Promise<number>
@@ -126,7 +123,10 @@ export const mysqlArticleRepository: ArticleRepository = {
       .from(articles)
       .innerJoin(articleCategories, eq(articleCategories.id, articles.categoryId))
       .where(condition)
-      .orderBy(desc(sql`COALESCE(${articles.publishedAt}, ${articles.updatedAt})`), desc(articles.id))
+      .orderBy(
+        desc(sql`COALESCE(${articles.publishedAt}, ${articles.updatedAt})`),
+        desc(articles.id),
+      )
       .limit(pageSize)
       .offset((page - 1) * pageSize)
     const [{ value: total }] = await db.select({ value: count() }).from(articles).where(condition)
@@ -258,6 +258,10 @@ export const mysqlArticleRepository: ArticleRepository = {
   async deleteArticle(id) {
     await db.transaction(async (transaction) => {
       await transaction.delete(articleTagRelations).where(eq(articleTagRelations.articleId, id))
+      // 文档元数据没有数据库外键，删除文章时由应用层同步清理。
+      await transaction
+        .delete(articleDocumentMetadata)
+        .where(eq(articleDocumentMetadata.articleId, id))
       await transaction.delete(articles).where(eq(articles.id, id))
     })
   },
@@ -302,7 +306,9 @@ export const mysqlArticleRepository: ArticleRepository = {
         .from(articles)
         .where(eq(articles.categoryId, id))
       if (value > 0) return false
-      const [result] = await transaction.delete(articleCategories).where(eq(articleCategories.id, id))
+      const [result] = await transaction
+        .delete(articleCategories)
+        .where(eq(articleCategories.id, id))
       return result.affectedRows === 1
     })
   },

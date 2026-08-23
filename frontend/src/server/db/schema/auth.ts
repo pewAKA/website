@@ -50,9 +50,8 @@ export const authSessions = mysqlTable(
     updatedAt: updatedAt(),
     ipAddress: varchar('ip_address', { length: 64 }),
     userAgent: text('user_agent'),
-    userId: varchar('user_id', { length: 36 })
-      .notNull()
-      .references(() => authUsers.id, { onDelete: 'cascade' }),
+    // 线上最小权限账号没有 REFERENCES 权限，关联完整性由 Better Auth 事务维护。
+    userId: varchar('user_id', { length: 36 }).notNull(),
     impersonatedBy: varchar('impersonated_by', { length: 36 }),
   },
   (table) => [
@@ -68,9 +67,8 @@ export const authAccounts = mysqlTable(
     issuer: varchar('issuer', { length: 191 }).notNull(),
     accountId: varchar('account_id', { length: 255 }).notNull(),
     providerId: varchar('provider_id', { length: 64 }).notNull(),
-    userId: varchar('user_id', { length: 36 })
-      .notNull()
-      .references(() => authUsers.id, { onDelete: 'cascade' }),
+    // 与既有业务表保持一致，不依赖数据库外键权限。
+    userId: varchar('user_id', { length: 36 }).notNull(),
     accessToken: text('access_token'),
     refreshToken: text('refresh_token'),
     idToken: text('id_token'),

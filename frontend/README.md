@@ -43,7 +43,10 @@ TZ=Asia/Shanghai
 
 - `npm run db:baseline`：只在数据库副本上反向生成既有业务表基线，用于人工审计。
 - `npm run db:migrate`：执行仓库内经过审查的迁移 SQL；生产环境禁止 `drizzle-kit push`。
+- `npm run docs:import-mock`：把仓库中的 6 篇示例文档幂等导入 MySQL；重复执行只更新带 `mock:*` 来源标记的记录，不覆盖同 slug 的人工文章。
 - `npm run auth:create-admin -- --email ... --name ... --role admin --data '{"username":"admin"}'`：交互式创建新管理员。
+
+公开首页文章预览、Fumadocs 门户、分类、标签、全文搜索和 sitemap 都读取 MySQL 中状态为 `PUBLISHED` 的文章。文档导入前先执行迁移；本地数据库位于远端时，请保持 `npm run dev` 创建的 SSH 隧道处于运行状态。
 
 ## 生产部署
 

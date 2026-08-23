@@ -3,6 +3,8 @@ import { DocsLayout } from 'fumadocs-ui/layouts/docs'
 import { getDocsSource } from '@/lib/docs/source'
 import '@/features/Docs/index.scss'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ArticlesLayout({ children }: { children: ReactNode }) {
   const source = await getDocsSource()
 

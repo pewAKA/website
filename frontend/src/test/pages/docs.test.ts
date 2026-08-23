@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createCompiler } from '@fumadocs/mdx-remote'
-import { searchServer } from '@/app/api/search/route'
+import { createFromSource } from 'fumadocs-core/search/server'
 import { documentCategories, mockDocuments } from '@/lib/docs/mock-documents'
 import {
   createDocumentTags,
@@ -11,7 +11,9 @@ import {
   getTagHref,
   mockDocumentRepository,
 } from '@/lib/docs/repository'
-import { getDocsSource } from '@/lib/docs/source'
+import { getDocsSourceForRepository } from '@/lib/docs/source'
+
+vi.mock('server-only', () => ({}))
 
 describe('Mock 文档数据层', () => {
   afterEach(() => {
@@ -70,7 +72,7 @@ describe('Mock 文档数据层', () => {
 
 describe('Fumadocs 文档源', () => {
   it('生成门户、分类页面树和稳定 URL', async () => {
-    const source = await getDocsSource()
+    const source = await getDocsSourceForRepository(mockDocumentRepository)
 
     expect(source.getPages()).toHaveLength(mockDocuments.length + 1)
     expect(source.getPage([])?.url).toBe('/articles')
@@ -90,6 +92,7 @@ describe('Fumadocs 文档源', () => {
   })
 
   it('用中文正文建立搜索索引', async () => {
+    const searchServer = createFromSource(() => getDocsSourceForRepository(mockDocumentRepository))
     const results = await searchServer.search('粒子')
 
     expect(results.some((result) => result.url === getDocumentHref(mockDocuments[2]))).toBe(true)

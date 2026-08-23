@@ -1,22 +1,31 @@
 import type { MetadataRoute } from 'next'
-import { documentCategories } from '@/lib/docs/mock-documents'
 import {
+  createDocumentCategories,
   createDocumentTags,
   getCategoryHref,
   getDocumentHref,
   getTagHref,
-  mockDocumentRepository,
 } from '@/lib/docs/repository'
+import { databaseDocumentRepository } from '@/server/repositories/document-repository'
+import type { DocumentRepository } from '@/lib/docs/types'
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export const dynamic = 'force-dynamic'
+
+export async function createSitemap(
+  repository: DocumentRepository,
+): Promise<MetadataRoute.Sitemap> {
   const siteUrl = (process.env.SITE_URL || 'http://localhost:3000').replace(/\/$/, '')
-  const documents = await mockDocumentRepository.list()
+  const documents = await repository.list()
+  const categories = createDocumentCategories(documents)
   const tags = createDocumentTags(documents)
   const staticRoutes = ['/', '/works', '/about', '/roadmap', '/articles']
 
   return [
-    ...staticRoutes.map((route) => ({ url: `${siteUrl}${route}`, changeFrequency: 'weekly' as const })),
-    ...documentCategories.map((category) => ({
+    ...staticRoutes.map((route) => ({
+      url: `${siteUrl}${route}`,
+      changeFrequency: 'weekly' as const,
+    })),
+    ...categories.map((category) => ({
       url: `${siteUrl}${getCategoryHref(category.slug)}`,
       changeFrequency: 'weekly' as const,
     })),
@@ -30,4 +39,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly' as const,
     })),
   ]
+}
+
+export default function sitemap() {
+  return createSitemap(databaseDocumentRepository)
 }
