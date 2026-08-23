@@ -1,20 +1,14 @@
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AdminSecurity } from '@/features/Admin/Security'
-import { changePassword } from '@/services/articles'
-import { clearAdminToken } from '@/services/request'
+import { changePassword } from '@/services/auth'
 import { renderWithQueryClient } from '@/test/renderWithQueryClient'
 
-vi.mock('@/services/articles', () => ({
+vi.mock('@/services/auth', () => ({
   changePassword: vi.fn(),
 }))
 
-vi.mock('@/services/request', () => ({
-  clearAdminToken: vi.fn(),
-}))
-
 const mockChangePassword = vi.mocked(changePassword)
-const mockClearAdminToken = vi.mocked(clearAdminToken)
 const replace = vi.hoisted(() => vi.fn())
 
 vi.mock('next/navigation', () => ({
@@ -49,8 +43,8 @@ describe('AdminSecurity', () => {
     expect(mockChangePassword).not.toHaveBeenCalled()
   })
 
-  it('成功后清除令牌并跳转至登录页', async () => {
-    mockChangePassword.mockResolvedValue(null)
+  it('成功后清除查询缓存并跳转至登录页', async () => {
+    mockChangePassword.mockResolvedValue(undefined)
     const { queryClient } = renderSecurityPage()
     queryClient.setQueryData(['admin', 'articles'], { items: [] })
     fillPasswords('new-secure-password')
@@ -63,7 +57,6 @@ describe('AdminSecurity', () => {
         newPassword: 'new-secure-password',
       }),
     )
-    expect(mockClearAdminToken).toHaveBeenCalledOnce()
     expect(queryClient.getQueryData(['admin', 'articles'])).toBeUndefined()
     expect(replace).toHaveBeenCalledWith('/admin/login?passwordChanged=1')
   })

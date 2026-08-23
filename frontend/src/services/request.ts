@@ -1,39 +1,24 @@
 import axios, { type AxiosError } from 'axios'
 
-export const adminTokenStorageKey = 'lynco-hub-admin-token'
+let clearAdminQueries: (() => void) | undefined
 
-export function getAdminToken() {
-  return window.sessionStorage.getItem(adminTokenStorageKey)
-}
-
-export function setAdminToken(token: string) {
-  window.sessionStorage.setItem(adminTokenStorageKey, token)
-}
-
-export function clearAdminToken() {
-  window.sessionStorage.removeItem(adminTokenStorageKey)
+/** 由后台 Provider 注入，避免网络层直接持有另一个 QueryClient 实例。 */
+export function setUnauthorizedHandler(handler: (() => void) | undefined) {
+  clearAdminQueries = handler
 }
 
 const request = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '/api',
+  baseURL: '/api',
   timeout: 10_000,
-})
-
-request.interceptors.request.use((config) => {
-  // 管理员令牌仅保留在会话内，关闭浏览器标签页后需要重新登录。
-  const token = getAdminToken()
-  if (token && !config.headers.Authorization) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
+  withCredentials: true,
 })
 
 request.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    // 令牌失效时统一结束当前后台会话，避免各页面重复处理 401。
+    // Session 失效时统一返回登录页，具体数据入口仍由服务端重新鉴权。
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      clearAdminToken()
+      clearAdminQueries?.()
       if (window.location.pathname !== '/admin/login') {
         window.location.assign('/admin/login')
       }

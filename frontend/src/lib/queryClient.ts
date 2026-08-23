@@ -13,5 +13,3 @@ export function createAppQueryClient() {
     },
   })
 }
-
-export const queryClient = createAppQueryClient()

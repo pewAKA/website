@@ -1,13 +1,11 @@
 import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import {
-  changePassword,
   createArticle,
   createCategory,
   createTag,
   deleteArticle,
   deleteCategory,
   deleteTag,
-  login,
   publishArticle,
   unpublishArticle,
   updateArticle,
@@ -18,11 +16,11 @@ import {
   type ChangePasswordPayload,
   type TaxonomyPayload,
 } from '@/services/articles'
-import { adminQueryKeys, articleQueryKeys } from '@/queries/articleQueries'
+import { changePassword, login } from '@/services/auth'
+import { adminQueryKeys } from '@/queries/articleQueries'
 
 async function invalidateArticleCollections(queryClient: QueryClient) {
   await Promise.all([
-    queryClient.invalidateQueries({ queryKey: articleQueryKeys.all }),
     queryClient.invalidateQueries({ queryKey: adminQueryKeys.articleLists() }),
     queryClient.invalidateQueries({ queryKey: adminQueryKeys.categories() }),
     queryClient.invalidateQueries({ queryKey: adminQueryKeys.tags() }),
@@ -31,7 +29,6 @@ async function invalidateArticleCollections(queryClient: QueryClient) {
 
 async function invalidateTaxonomyCollections(queryClient: QueryClient) {
   await Promise.all([
-    queryClient.invalidateQueries({ queryKey: articleQueryKeys.all }),
     queryClient.invalidateQueries({ queryKey: adminQueryKeys.articles() }),
     queryClient.invalidateQueries({ queryKey: adminQueryKeys.categories() }),
     queryClient.invalidateQueries({ queryKey: adminQueryKeys.tags() }),

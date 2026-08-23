@@ -1,94 +1,30 @@
 import { isAxiosError } from 'axios'
 import request from '@/services/request'
+import type {
+  AdminArticleListParams,
+  Article,
+  ArticleCategory,
+  ArticlePayload,
+  ArticleTag,
+  PageResponse,
+  TaxonomyPayload,
+} from '@/lib/articles/types'
+
+export type {
+  AdminArticleListParams,
+  Article,
+  ArticleCategory,
+  ArticlePayload,
+  ArticleTag,
+  ChangePasswordPayload,
+  PageResponse,
+  TaxonomyPayload,
+} from '@/lib/articles/types'
 
 export type ApiResponse<T> = {
   code: string
   message: string
   data: T
-}
-
-export type ArticleCategory = {
-  id: number
-  name: string
-  slug: string
-  sortOrder: number | null
-  enabled: boolean
-  articleCount: number | null
-}
-
-export type ArticleTag = {
-  id: number
-  name: string
-  slug: string
-  articleCount: number | null
-}
-
-export type Article = {
-  id: number
-  title: string
-  slug: string
-  summary: string
-  content: string
-  coverImageUrl: string | null
-  status: 'DRAFT' | 'PUBLISHED'
-  publishedAt: string | null
-  createdAt: string
-  updatedAt: string
-  category: ArticleCategory
-  tags: ArticleTag[]
-}
-
-export type PageResponse<T> = {
-  items: T[]
-  total: number
-  page: number
-  pageSize: number
-}
-
-export type Taxonomy = {
-  categories: ArticleCategory[]
-  tags: ArticleTag[]
-}
-
-export type ArticlePayload = {
-  title: string
-  slug: string
-  summary: string
-  content: string
-  coverImageUrl?: string
-  categoryId: number
-  tagIds: number[]
-}
-
-export type TaxonomyPayload = {
-  name: string
-  slug: string
-  sortOrder?: number
-  enabled?: boolean
-}
-
-export type ChangePasswordPayload = {
-  currentPassword: string
-  newPassword: string
-}
-
-export type ArticleListParams = {
-  category?: string
-  tag?: string
-  page?: number
-  pageSize?: number
-}
-
-export type AdminArticleListParams = {
-  status?: string
-  page?: number
-  pageSize?: number
-}
-
-type LoginResponse = {
-  token: string
-  tokenType: string
-  expiresInSeconds: number
 }
 
 function errorMessage(error: unknown) {
@@ -108,26 +44,6 @@ async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>) {
   } catch (error) {
     throw new Error(errorMessage(error))
   }
-}
-
-export function getArticles(params: ArticleListParams, signal?: AbortSignal) {
-  return unwrap(request.get<ApiResponse<PageResponse<Article>>>('/articles', { params, signal }))
-}
-
-export function getArticle(slug: string, signal?: AbortSignal) {
-  return unwrap(request.get<ApiResponse<Article>>(`/articles/${slug}`, { signal }))
-}
-
-export function getTaxonomy(signal?: AbortSignal) {
-  return unwrap(request.get<ApiResponse<Taxonomy>>('/article-taxonomy', { signal }))
-}
-
-export function login(username: string, password: string) {
-  return unwrap(request.post<ApiResponse<LoginResponse>>('/auth/login', { username, password }))
-}
-
-export function changePassword(payload: ChangePasswordPayload) {
-  return unwrap(request.put<ApiResponse<null>>('/auth/password', payload))
 }
 
 export function getAdminArticles(params: AdminArticleListParams, signal?: AbortSignal) {

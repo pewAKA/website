@@ -1,0 +1,38 @@
+services:
+  frontend:
+    build:
+      context: ../frontend
+      target: runner
+      args:
+        SITE_URL: ${SITE_URL}
+    restart: unless-stopped
+    network_mode: host
+    env_file: .env
+    environment:
+      PORT: 3000
+      MEDIA_ROOT: /app/uploads
+      MEDIA_PUBLIC_PATH: /media
+      TZ: Asia/Shanghai
+    volumes:
+      - ${MEDIA_HOST_PATH:-/var/lib/personal-website/uploads}:/app/uploads
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 20s
+
+  # tools 仅在显式指定 profile 时运行迁移或管理员 CLI，不随网站常驻。
+  tools:
+    profiles: [tools]
+    build:
+      context: ../frontend
+      target: tools
+    network_mode: host
+    env_file: .env
+    environment:
+      MEDIA_ROOT: /app/uploads
+      MEDIA_PUBLIC_PATH: /media
+      TZ: Asia/Shanghai
+    volumes:
+      - ${MEDIA_HOST_PATH:-/var/lib/personal-website/uploads}:/app/uploads

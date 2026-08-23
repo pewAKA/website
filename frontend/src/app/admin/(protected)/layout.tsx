@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react'
-import AdminGuard from '@/components/AdminProviders/AdminGuard'
+import { redirect } from 'next/navigation'
 import { AdminLayout } from '@/features/Admin'
+import { getAdminSession } from '@/server/auth/session'
 
-export default function ProtectedAdminLayout({ children }: { children: ReactNode }) {
-  return <AdminGuard><AdminLayout>{children}</AdminLayout></AdminGuard>
+export default async function ProtectedAdminLayout({ children }: { children: ReactNode }) {
+  if (!(await getAdminSession())) redirect('/admin/login')
+  return <AdminLayout>{children}</AdminLayout>
 }

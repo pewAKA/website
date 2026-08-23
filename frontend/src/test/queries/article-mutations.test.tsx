@@ -14,19 +14,18 @@ import {
 import {
   adminArticlesQueryOptions,
   adminQueryKeys,
-  articleQueryKeys,
 } from '@/queries/articleQueries'
 import {
   createArticle,
   deleteArticle,
   getAdminArticles,
-  login,
   publishArticle,
   unpublishArticle,
   updateArticle,
   updateCategory,
   type Article,
 } from '@/services/articles'
+import { login } from '@/services/auth'
 import { createTestQueryClient } from '@/test/renderWithQueryClient'
 
 vi.mock('@/services/articles', async (importOriginal) => {
@@ -36,13 +35,17 @@ vi.mock('@/services/articles', async (importOriginal) => {
     createArticle: vi.fn(),
     deleteArticle: vi.fn(),
     getAdminArticles: vi.fn(),
-    login: vi.fn(),
     publishArticle: vi.fn(),
     unpublishArticle: vi.fn(),
     updateArticle: vi.fn(),
     updateCategory: vi.fn(),
   }
 })
+
+vi.mock('@/services/auth', () => ({
+  login: vi.fn(),
+  changePassword: vi.fn(),
+}))
 
 const article: Article = {
   id: 1,
@@ -149,10 +152,9 @@ describe('article mutations', () => {
     )
   })
 
-  it('taxonomy 变更后使公开文章和后台 taxonomy 缓存失效', async () => {
+  it('taxonomy 变更后使后台 taxonomy 缓存失效', async () => {
     vi.mocked(updateCategory).mockResolvedValue(article.category)
     const { queryClient, Wrapper } = createWrapper()
-    queryClient.setQueryData(articleQueryKeys.taxonomy(), { categories: [], tags: [] })
     queryClient.setQueryData(adminQueryKeys.categories(), [article.category])
     const mutationHook = renderHook(() => useUpdateCategoryMutation(), { wrapper: Wrapper })
 
@@ -168,16 +170,11 @@ describe('article mutations', () => {
       }),
     )
 
-    expect(queryClient.getQueryState(articleQueryKeys.taxonomy())?.isInvalidated).toBe(true)
     expect(queryClient.getQueryState(adminQueryKeys.categories())?.isInvalidated).toBe(true)
   })
 
   it('登录成功后移除旧查询缓存', async () => {
-    vi.mocked(login).mockResolvedValue({
-      token: 'token',
-      tokenType: 'Bearer',
-      expiresInSeconds: 3600,
-    })
+    vi.mocked(login).mockResolvedValue({} as Awaited<ReturnType<typeof login>>)
     const { queryClient, Wrapper } = createWrapper()
     queryClient.setQueryData(adminQueryKeys.articleDetail('1'), article)
     const mutationHook = renderHook(() => useLoginMutation(), { wrapper: Wrapper })

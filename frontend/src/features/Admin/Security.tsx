@@ -3,8 +3,7 @@
 import { Form, Input, Button, message } from 'antd'
 import { useRouter } from 'next/navigation'
 import { useChangePasswordMutation } from '@/queries/articleMutations'
-import type { ChangePasswordPayload } from '@/services/articles'
-import { clearAdminToken } from '@/services/request'
+import type { ChangePasswordPayload } from '@/lib/articles/types'
 import './index.scss'
 
 type PasswordFormValues = ChangePasswordPayload & {
@@ -22,7 +21,6 @@ export function AdminSecurity() {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       })
-      clearAdminToken()
       router.replace('/admin/login?passwordChanged=1')
     } catch (error) {
       message.error(error instanceof Error ? error.message : '密码未能更新，请稍后重试。')

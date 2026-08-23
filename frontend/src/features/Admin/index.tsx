@@ -32,7 +32,7 @@ import {
   adminCategoriesQueryOptions,
   adminTagsQueryOptions,
 } from '@/queries/articleQueries'
-import { clearAdminToken, setAdminToken } from '@/services/request'
+import { logout } from '@/services/auth'
 import './index.scss'
 
 type LoginValues = { username: string; password: string }
@@ -67,8 +67,7 @@ export function AdminLogin() {
 
   async function submit(values: LoginValues) {
     try {
-      const result = await loginMutation.mutateAsync(values)
-      setAdminToken(result.token)
+      await loginMutation.mutateAsync(values)
       router.replace('/admin/articles')
     } catch (error) {
       message.error(errorText(error))
@@ -121,11 +120,13 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const queryClient = useQueryClient()
 
-  function logout() {
-    // 主动清理当前标签页的令牌，避免共用设备继续保留管理权限。
-    clearAdminToken()
-    queryClient.clear()
-    router.replace('/admin/login')
+  async function endSession() {
+    try {
+      await logout()
+    } finally {
+      queryClient.clear()
+      router.replace('/admin/login')
+    }
   }
 
   return (
@@ -139,7 +140,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           <Link className={pathname === '/admin/taxonomy' ? 'active' : ''} href="/admin/taxonomy">分类与标签</Link>
           <Link className={pathname === '/admin/security' ? 'active' : ''} href="/admin/security">安全设置</Link>
         </nav>
-        <button type="button" onClick={logout}>
+        <button type="button" onClick={() => void endSession()}>
           退出登录
         </button>
       </header>

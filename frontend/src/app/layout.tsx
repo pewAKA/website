@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { IBM_Plex_Mono, Instrument_Sans } from 'next/font/google'
+import localFont from 'next/font/local'
 import type { ReactNode } from 'react'
 import { RootProvider } from 'fumadocs-ui/provider/next'
 import '@/styles/fumadocs.css'
@@ -8,15 +8,18 @@ import { docsI18nProvider } from '@/lib/docs/translations'
 
 const siteUrl = process.env.SITE_URL || 'http://localhost:3000'
 
-const instrumentSans = Instrument_Sans({
-  subsets: ['latin'],
+const instrumentSans = localFont({
+  src: '../assets/fonts/InstrumentSans-Variable.ttf',
   variable: '--font-display',
   display: 'swap',
+  weight: '400 700',
 })
 
-const ibmPlexMono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
+const ibmPlexMono = localFont({
+  src: [
+    { path: '../assets/fonts/IBMPlexMono-Regular.ttf', weight: '400' },
+    { path: '../assets/fonts/IBMPlexMono-Medium.ttf', weight: '500' },
+  ],
   variable: '--font-mono',
   display: 'swap',
 })
