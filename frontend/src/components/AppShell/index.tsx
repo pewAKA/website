@@ -1,18 +1,22 @@
 'use client'
 
 import type { ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
 import FloatingNav from '@/components/FloatingNav'
-import StartupPreloader from '@/components/StartupPreloader'
-import { StartupPreloadProvider } from '@/providers/StartupPreloadProvider'
 
 export default function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname()
+  const isExperiment = ['/works/waves', '/works/galaxy', '/works/scroll'].some(
+    (route) => pathname === route,
+  )
+  const isDocs = pathname === '/articles' || pathname.startsWith('/articles/')
+
   return (
-    <StartupPreloadProvider>
-      <main className="app-shell">
-        <FloatingNav />
-        {children}
-      </main>
-      <StartupPreloader />
-    </StartupPreloadProvider>
+    <div
+      className={`app-shell${isExperiment ? ' app-shell--experiment' : ''}${isDocs ? ' app-shell--docs' : ''}`}
+    >
+      {!isExperiment && !isDocs && <FloatingNav />}
+      {children}
+    </div>
   )
 }

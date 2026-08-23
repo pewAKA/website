@@ -2,116 +2,116 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './index.scss'
 
-type ThemeMode = 'light' | 'dark'
-
 const navItems = [
-  { label: '首页', path: '/' },
-  { label: '项目作品', path: '/works' },
-  { label: '技术文章', path: '/articles' },
-  { label: '关于我', path: '/about' },
-  { label: '后续拓展', path: '/roadmap' },
+  { label: '作品', path: '/works' },
+  { label: '文章', path: '/articles' },
+  { label: '关于', path: '/about' },
 ]
-
-const themeStorageKey = 'lynco-hub-theme'
-
-function getSystemTheme(): ThemeMode {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
-function getInitialTheme(): ThemeMode {
-  const storedTheme = window.localStorage.getItem(themeStorageKey)
-  return storedTheme === 'light' || storedTheme === 'dark' ? storedTheme : getSystemTheme()
-}
 
 function FloatingNav() {
   const [open, setOpen] = useState(false)
-  const [theme, setTheme] = useState<ThemeMode>('light')
   const pathname = usePathname()
-
-  useEffect(() => {
-    setTheme(getInitialTheme())
-  }, [])
-
-  // 将主题写到 html 属性上，和全局 CSS token 的明暗模式保持同步。
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme
-    window.localStorage.setItem(themeStorageKey, theme)
-  }, [theme])
+  const menuRef = useRef<HTMLDivElement>(null)
+  const toggleRef = useRef<HTMLButtonElement>(null)
 
   // 路由切换后自动收起菜单，避免展开面板遮挡新页面标题。
   useEffect(() => {
     setOpen(false)
   }, [pathname])
 
-  // 展开状态下支持 Escape 收起，键盘用户不用移动焦点也能关闭菜单。
+  // 移动菜单打开后锁定页面滚动，并把键盘焦点限制在菜单内部。
   useEffect(() => {
     if (!open) {
       return
     }
 
+    const previousOverflow = document.body.style.overflow
+    const focusable = menuRef.current?.querySelectorAll<HTMLElement>('a, button') ?? []
+    const firstItem = focusable[0]
+    const lastItem = focusable[focusable.length - 1]
+
+    document.body.style.overflow = 'hidden'
+    firstItem?.focus()
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setOpen(false)
+        toggleRef.current?.focus()
+        return
+      }
+
+      if (event.key !== 'Tab' || focusable.length === 0) {
+        return
+      }
+
+      if (event.shiftKey && document.activeElement === firstItem) {
+        event.preventDefault()
+        lastItem?.focus()
+      } else if (!event.shiftKey && document.activeElement === lastItem) {
+        event.preventDefault()
+        firstItem?.focus()
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [open])
 
   return (
-    <nav className={`floating-nav${open ? ' floating-nav--open' : ''}`} aria-label="主导航">
-      <div className="floating-nav__controls">
+    <header className={`site-header${open ? ' site-header--open' : ''}`}>
+      <div className="site-header__bar">
+        <Link className="site-header__brand" href="/" aria-label="Lynco Hub 首页">
+          <span className="site-header__brand-mark">LH</span>
+          <span>Lynco Hub</span>
+        </Link>
+
+        <nav className="site-header__desktop-nav" aria-label="主导航">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              className={
+                pathname === item.path || pathname.startsWith(`${item.path}/`) ? 'is-active' : ''
+              }
+              href={item.path}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
         <button
-          className={`floating-nav__theme-toggle floating-nav__theme-toggle--${theme}`}
+          ref={toggleRef}
+          className="site-header__toggle"
           type="button"
-          aria-label={theme === 'dark' ? '切换为浅色模式' : '切换为夜间模式'}
-          aria-pressed={theme === 'dark'}
-          onClick={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}
+          aria-expanded={open}
+          aria-controls="site-menu"
+          onClick={() => setOpen((current) => !current)}
         >
-          <span className="floating-nav__theme-icon" aria-hidden="true" />
+          {open ? '关闭' : '菜单'}
         </button>
-        <div className="floating-nav__bar">
-          <span className="floating-nav__brand" aria-label="Lynco Hub">
-            <span className="floating-nav__brand-mark">LH</span>
-            <span className="floating-nav__brand-name">Lynco Hub</span>
-          </span>
-          <button
-            className="floating-nav__toggle"
-            type="button"
-            aria-expanded={open}
-            aria-controls="floating-nav-panel"
-            aria-label={open ? '收起菜单' : '展开菜单'}
-            onClick={() => setOpen((current) => !current)}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
-        </div>
       </div>
 
-      <div className="floating-nav__panel" id="floating-nav-panel">
-        {navItems.map((item) => (
-          <Link
-            key={item.path}
-            className={`floating-nav__link${
-              pathname === item.path || (item.path !== '/' && pathname.startsWith(`${item.path}/`))
-                ? ' floating-nav__link--active'
-                : ''
-            }`}
-            href={item.path}
-            onClick={() => setOpen(false)}
-          >
-            <span>{item.label}</span>
-            <small>{item.path}</small>
+      <div ref={menuRef} className="site-menu" id="site-menu" hidden={!open}>
+        <nav aria-label="移动端主导航">
+          {navItems.map((item) => (
+            <Link key={item.path} href={item.path} onClick={() => setOpen(false)}>
+              <span>{item.label}</span>
+              <small>{item.path}</small>
+            </Link>
+          ))}
+          <Link href="/roadmap" onClick={() => setOpen(false)}>
+            <span>路线图</span>
+            <small>/roadmap</small>
           </Link>
-        ))}
+        </nav>
       </div>
-    </nav>
+    </header>
   )
 }
 

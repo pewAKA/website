@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Home from '@/features/Home'
+import { getDocumentCategory, getDocumentHref, getRecentDocuments } from '@/lib/docs/repository'
 
 export const metadata: Metadata = {
   title: '首页',
@@ -7,6 +8,14 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
 }
 
-export default function HomePage() {
-  return <Home />
+export default async function HomePage() {
+  const articles = (await getRecentDocuments(2)).map((document) => ({
+    id: document.id,
+    title: document.title,
+    href: getDocumentHref(document),
+    publishedAt: document.publishedAt,
+    categoryName: getDocumentCategory(document.category)?.name || document.category,
+  }))
+
+  return <Home articles={articles} />
 }

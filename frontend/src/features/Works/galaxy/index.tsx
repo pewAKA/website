@@ -1,103 +1,54 @@
 'use client'
 
-import { Canvas } from '@react-three/fiber'
-import { GizmoHelper, GizmoViewport, OrbitControls } from '@react-three/drei'
-import './index.scss'
+import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo } from 'react'
-import { useControls } from 'leva'
+import ExperimentCanvas from '@/components/ExperimentCanvas'
+import ExperimentFrame from '@/components/ExperimentFrame'
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import GalaxyPoints from './GalaxyPoints'
 
-export default function GalaxyScene() {
-  return (
-    <section className="galaxy-page">
-      <Canvas className="galaxy-canvas" camera={{ position: [5, 5, 5], near: 0.1, far: 100 }}>
-        <Scene />
-      </Canvas>
-    </section>
-  )
-}
-
-function Scene() {
-  return (
-    <>
-      <GalaxyBody />
-
-      <OrbitControls enableDamping />
-      <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
-        <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="white" />
-      </GizmoHelper>
-    </>
-  )
-}
-
 function GalaxyBody() {
-  const { count, radius, branch, spinOffset, spreadPow, innerColor, outterColor } = useControls({
-    count: {
-      label: '恒星数量',
-      value: 30000,
-      min: 100,
-      max: 100000,
-      step: 1,
-    },
-    radius: {
-      label: '星系半径',
-      value: 15,
-      min: 5,
-      max: 50,
-      step: 0.01,
-    },
-    branch: {
-      label: '旋臂数量',
-      value: 3,
-      min: 1,
-      max: 15,
-      step: 1,
-    },
-    spinOffset: {
-      label: '旋转偏移',
-      value: 1,
-      min: -5,
-      max: 5,
-      step: 0.1,
-    },
-    spreadPow: {
-      label: '散布指数',
-      value: 5,
-      min: 1,
-      max: 10,
-      step: 1,
-    },
-    innerColor: {
-      label: '内部颜色',
-      value: '#eb6666',
-    },
-    outterColor: {
-      label: '外部颜色',
-      value: '#4949ef',
-    },
-  })
-
+  const reducedMotion = usePrefersReducedMotion()
   const galaxyPoints = useMemo(() => new GalaxyPoints(), [])
 
-  //清理内存
-  useEffect(() => {
-    return () => {
-      galaxyPoints.dispose()
-    }
-  }, [galaxyPoints])
-
-  //构建
   useEffect(() => {
     galaxyPoints.generate({
-      count,
-      radius,
-      branch,
-      spinOffset,
-      spreadPow,
-      innerColor,
-      outterColor,
+      count: 26000,
+      radius: 7,
+      branch: 4,
+      spinOffset: 0.82,
+      spreadPow: 4,
+      innerColor: '#eff1ed',
+      outerColor: '#2856d8',
     })
-  }, [branch, count, galaxyPoints, innerColor, outterColor, radius, spinOffset, spreadPow])
 
-  return <primitive object={galaxyPoints} />
+    // 手动创建的 Three.js 对象必须在页面离开时释放 GPU 资源。
+    return () => galaxyPoints.dispose()
+  }, [galaxyPoints])
+
+  useFrame((_, delta) => {
+    if (!reducedMotion) {
+      galaxyPoints.rotation.y += delta * 0.035
+    }
+  })
+
+  return <primitive object={galaxyPoints} rotation-x={0.16} />
+}
+
+export default function GalaxyPage() {
+  return (
+    <ExperimentFrame
+      title="Galaxy Systems"
+      description="程序化生成粒子位置，并以距离控制色彩与旋臂结构。"
+      technologies={['Three.js', 'BufferGeometry', 'R3F']}
+    >
+      <ExperimentCanvas
+        posterSrc="/works/galaxy.webp"
+        posterAlt="粒子星系的实验海报"
+        camera={{ position: [0, 4.6, 10.5], fov: 48, near: 0.1, far: 60 }}
+      >
+        <GalaxyBody />
+      </ExperimentCanvas>
+    </ExperimentFrame>
+  )
 }

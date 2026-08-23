@@ -1,47 +1,78 @@
-.pageContainer {
-  // 页面内容始终显示在三维场景上方。
-  position: relative;
-  z-index: 1;
-  background-color: transparent;
+.story {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  width: 100vw;
+  height: 100%;
+  overflow-y: auto;
+  color: #eff1ed;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(239 241 237 / 28%) transparent;
+}
 
-  .segmentCard {
-    position: relative;
-    height: 100vh;
-    display: flex;
+.segment {
+  display: flex;
+  align-items: center;
+  width: 100vw;
+  height: 100%;
+  padding: 110px clamp(24px, 8vw, 140px) 96px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  pointer-events: none;
+}
 
-    .text {
-      position: absolute;
-      top: 50%;
-      color: aliceblue;
-      transform: translateY(-50%);
-      font-size: 100px;
-      font-weight: 800;
+.copyLeft,
+.copyRight {
+  width: min(42vw, 580px);
 
-      &.text1 {
-        left: 15%;
-      }
-      &.text2 {
-        right: 15%;
-      }
-      &.text3 {
-        left: 15%;
-      }
-    }
+  h2 {
+    margin: 0;
+    font-size: clamp(44px, 6.4vw, 96px);
+    font-weight: 500;
+    line-height: 0.94;
+    letter-spacing: -0.065em;
+  }
+
+  p {
+    max-width: 400px;
+    margin: 22px 0 0;
+    color: rgb(239 241 237 / 68%);
+    font-size: clamp(14px, 1.3vw, 18px);
+    line-height: 1.65;
   }
 }
 
-.sceneContainer {
-  // 固定场景作为页面背景层，不遮挡或拦截前景内容。
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 0;
-  pointer-events: none;
+.copyLeft {
+  margin-right: auto;
+}
 
-  .sceneCanvas {
-    width: 100%;
-    height: 100%;
+.copyRight {
+  margin-left: auto;
+  text-align: right;
+
+  p {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .segment {
+    align-items: flex-end;
+    padding: 100px 20px 132px;
+  }
+
+  .copyLeft,
+  .copyRight {
+    width: min(100%, 520px);
+    margin-right: 0;
+    margin-left: 0;
+    text-align: left;
+
+    p {
+      max-width: 88%;
+      margin-right: 0;
+      margin-left: 0;
+    }
   }
 }

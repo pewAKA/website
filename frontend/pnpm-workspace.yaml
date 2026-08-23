@@ -3,3 +3,5 @@ allowBuilds:
   sharp: true
 overrides:
   '@types/three': 0.185.1
+  # hast-util-to-estree 需要带标准 ESM default 导出的 1.1.x。
+  style-to-js@^1.0.0: 1.1.21

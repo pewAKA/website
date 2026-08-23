@@ -1,22 +1,23 @@
 'use client'
 
-import { Canvas } from '@react-three/fiber'
+import ExperimentCanvas from '@/components/ExperimentCanvas'
+import ExperimentFrame from '@/components/ExperimentFrame'
 import WavesScene from './WavesScene'
-import { GizmoHelper, GizmoViewport, OrbitControls } from '@react-three/drei'
-
-import styles from './index.module.scss'
 
 export default function WavesPage() {
   return (
-    <div className={styles.pageContainer}>
-      <Canvas className={styles.pageCanvas} camera={{ position: [5, 5, 5] }}>
-        <directionalLight />
+    <ExperimentFrame
+      title="Wave Shader"
+      description="顶点位移负责塑造波面，片元颜色负责表现深度与光感。"
+      technologies={['GLSL', 'ShaderMaterial', 'R3F']}
+    >
+      <ExperimentCanvas
+        posterSrc="/works/waves.webp"
+        posterAlt="金属数字波面的实验海报"
+        camera={{ position: [0, 3.7, 6.4], fov: 44, near: 0.1, far: 40 }}
+      >
         <WavesScene />
-        <OrbitControls enableDamping />
-        <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
-          <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="white" />
-        </GizmoHelper>
-      </Canvas>
-    </div>
+      </ExperimentCanvas>
+    </ExperimentFrame>
   )
 }

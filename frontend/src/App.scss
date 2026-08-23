@@ -1,10 +1,17 @@
 .app-shell {
   position: relative;
-  min-height: 100svh;
-  overflow-x: hidden;
-  background:
-    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px),
-    linear-gradient(180deg, var(--color-grid) 1px, transparent 1px),
-    var(--color-page-bg);
-  background-size: 72px 72px;
+  flex: 1;
+  width: 100%;
+  min-height: 100dvh;
+  overflow-x: clip;
+  background: var(--color-page-bg);
+}
+
+.app-shell--experiment {
+  overflow: hidden;
+  background: #0b0d0c;
+}
+
+.app-shell--docs {
+  overflow: visible;
 }

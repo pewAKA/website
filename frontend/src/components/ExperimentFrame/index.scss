@@ -1,0 +1,129 @@
+.experiment-frame {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #0b0d0c;
+  color: #eff1ed;
+
+  &__header,
+  &__meta {
+    position: absolute;
+    z-index: 3;
+    right: 28px;
+    left: 28px;
+    display: flex;
+    justify-content: space-between;
+    gap: 28px;
+    pointer-events: none;
+  }
+
+  &__header {
+    top: 24px;
+    align-items: flex-start;
+
+    > a {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 42px;
+      padding: 4px 14px 4px 5px;
+      border: 1px solid rgb(239 241 237 / 22%);
+      border-radius: 999px;
+      background: rgb(11 13 12 / 76%);
+      color: #eff1ed;
+      font-size: 12px;
+      font-weight: 620;
+      text-decoration: none;
+      pointer-events: auto;
+    }
+
+    > div {
+      text-align: right;
+
+      p {
+        margin: 0 0 7px;
+        color: #7f98e4;
+        font-family: var(--font-mono), monospace;
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(20px, 2.5vw, 34px);
+        font-weight: 520;
+        letter-spacing: -0.045em;
+      }
+    }
+  }
+
+  &__mark {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 50%;
+    background: #eff1ed;
+    color: #0b0d0c;
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
+  }
+
+  &__stage {
+    position: absolute;
+    inset: 0;
+  }
+
+  &__meta {
+    bottom: 22px;
+    align-items: flex-end;
+
+    p {
+      max-width: 480px;
+      margin: 0;
+      color: rgb(239 241 237 / 68%);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    > span {
+      color: rgb(239 241 237 / 58%);
+      font-family: var(--font-mono), monospace;
+      font-size: 9px;
+      text-align: right;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .experiment-frame {
+    &__header,
+    &__meta {
+      right: 16px;
+      left: 16px;
+    }
+
+    &__header {
+      top: 14px;
+
+      > div p {
+        display: none;
+      }
+    }
+
+    &__meta {
+      bottom: 14px;
+
+      p {
+        max-width: 72%;
+        font-size: 11px;
+      }
+
+      > span {
+        max-width: 28%;
+      }
+    }
+  }
+}
