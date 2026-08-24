@@ -23,9 +23,19 @@ const input = {
   content: '# 正文',
   categoryId: 1,
   tagIds: [1, 2],
+  documentMeta: { featured: false, readingMinutes: null },
 }
 
 describe('ArticleService', () => {
+  it('无效 MDX 不会进入数据库', async () => {
+    const createArticle = vi.fn()
+    const repository = createRepository({ createArticle })
+    await expect(
+      new ArticleService(repository).create({ ...input, content: '<Tabs>' }),
+    ).rejects.toMatchObject({ status: 400, code: 'VALIDATION_ERROR' })
+    expect(createArticle).not.toHaveBeenCalled()
+  })
+
   it('拒绝未启用分类', async () => {
     const repository = createRepository({
       findCategoryById: vi.fn().mockResolvedValue({ id: 1, enabled: false }),
@@ -56,4 +66,3 @@ describe('ArticleService', () => {
     await expect(new ArticleService(repository).deleteCategory(1)).rejects.toThrow('仍有关联文章')
   })
 })
-

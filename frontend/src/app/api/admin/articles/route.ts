@@ -2,6 +2,7 @@ import { articleService } from '@/server/services/article-service'
 import { requireAdmin } from '@/server/auth/session'
 import { fail, ok, readJson } from '@/server/http/response'
 import { adminArticleListSchema, articleUpsertSchema } from '@/server/validation/articles'
+import { revalidateDocsSource } from '@/lib/docs/source'
 
 export const runtime = 'nodejs'
 
@@ -24,7 +25,9 @@ export async function POST(request: Request) {
   try {
     await requireAdmin(request.headers)
     const input = articleUpsertSchema.parse(await readJson(request))
-    return ok(await articleService.create(input))
+    const article = await articleService.create(input)
+    await revalidateDocsSource()
+    return ok(article)
   } catch (error) {
     return fail(error)
   }

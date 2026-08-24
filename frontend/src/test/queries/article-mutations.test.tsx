@@ -67,6 +67,7 @@ const article: Article = {
     articleCount: 1,
   },
   tags: [],
+  documentMeta: { featured: false, readingMinutes: null, estimatedReadingMinutes: 1 },
 }
 
 const articlePayload = {
@@ -76,6 +77,7 @@ const articlePayload = {
   content: article.content,
   categoryId: article.category.id,
   tagIds: [],
+  documentMeta: { featured: false, readingMinutes: null },
 }
 
 function createWrapper() {

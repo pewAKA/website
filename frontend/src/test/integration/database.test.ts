@@ -103,6 +103,7 @@ integrationSuite('MySQL 8 迁移与文章事务', () => {
     const id = await repository.createArticle({
       title: '事务文章', slug: 'transaction-article', summary: '摘要', content: '# 正文',
       categoryId: 101, tagIds: [201],
+      documentMeta: { featured: false, readingMinutes: null },
     })
     const [relations] = await setupPool.query<CountRow[]>(
       'SELECT COUNT(*) AS count FROM article_tag_relation WHERE article_id = ?',
@@ -115,6 +116,7 @@ integrationSuite('MySQL 8 迁移与文章事务', () => {
     await expect(repository.createArticle({
       title: '回滚文章', slug: 'rollback-article', summary: '摘要', content: '# 正文',
       categoryId: 101, tagIds: [201, 201],
+      documentMeta: { featured: false, readingMinutes: null },
     })).rejects.toBeDefined()
     const [rows] = await setupPool.query<CountRow[]>(
       "SELECT COUNT(*) AS count FROM article WHERE slug = 'rollback-article'",

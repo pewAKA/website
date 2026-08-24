@@ -1,5 +1,5 @@
-import { AdminTaxonomy } from '@/features/Admin'
+import { redirect } from 'next/navigation'
 
 export default function AdminTaxonomyPage() {
-  return <AdminTaxonomy />
+  redirect('/articles/manage/taxonomy')
 }

@@ -31,9 +31,27 @@ describe('后台文章请求校验', () => {
     expect(adminArticleListSchema.safeParse({ pageSize: 51 }).success).toBe(false)
   })
 
+  it('文档元数据默认自动估算，也支持人工阅读时长', () => {
+    expect(articleUpsertSchema.parse(validArticle).documentMeta).toEqual({
+      featured: false,
+      readingMinutes: null,
+    })
+    expect(
+      articleUpsertSchema.parse({
+        ...validArticle,
+        documentMeta: { featured: true, readingMinutes: 12 },
+      }).documentMeta,
+    ).toEqual({ featured: true, readingMinutes: 12 })
+    expect(
+      articleUpsertSchema.safeParse({
+        ...validArticle,
+        documentMeta: { featured: false, readingMinutes: 121 },
+      }).success,
+    ).toBe(false)
+  })
+
   it('只接受正整数资源 ID', () => {
     expect(positiveIdSchema.parse('12')).toBe(12)
     expect(positiveIdSchema.safeParse('-1').success).toBe(false)
   })
 })
-

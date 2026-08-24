@@ -1,5 +1,5 @@
-import { AdminArticleEditor } from '@/features/Admin'
+import { redirect } from 'next/navigation'
 
-export default function EditArticlePage() {
-  return <AdminArticleEditor />
+export default async function EditArticlePage({ params }: { params: Promise<{ id: string }> }) {
+  redirect(`/articles/manage/${encodeURIComponent((await params).id)}`)
 }

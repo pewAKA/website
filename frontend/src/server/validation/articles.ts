@@ -15,6 +15,18 @@ export const articleUpsertSchema = z
     coverImageUrl: z.string().trim().max(500, '封面地址不能超过 500 个字符').optional(),
     categoryId: z.number().int().positive('请选择一个有效分类'),
     tagIds: z.array(z.number().int().positive('标签 ID 不合法')).max(100).default([]),
+    documentMeta: z
+      .object({
+        featured: z.boolean().default(false),
+        readingMinutes: z
+          .number()
+          .int('阅读时长必须是整数')
+          .min(1, '阅读时长不能少于 1 分钟')
+          .max(120, '阅读时长不能超过 120 分钟')
+          .nullable()
+          .default(null),
+      })
+      .default({ featured: false, readingMinutes: null }),
   })
   .superRefine((value, context) => {
     if (new Set(value.tagIds).size !== value.tagIds.length) {

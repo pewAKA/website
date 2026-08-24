@@ -1,37 +1,18 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { createCompiler } from '@fumadocs/mdx-remote'
-import {
-  DocsBody,
-  DocsDescription,
-  DocsPage,
-  DocsTitle,
-  PageLastUpdate,
-} from 'fumadocs-ui/layouts/docs/page'
-import Link from 'next/link'
-import { getDocsMdxComponents } from '@/components/DocsMdx'
+import { ArticleDocument } from '@/features/Docs/ArticleDocument'
 import DocsCollection from '@/features/Docs/Collection'
 import DocsPortal from '@/features/Docs/Portal'
 import {
   createDocumentCategories,
   createDocumentTags,
   getCategoryHref,
-  getDocumentCategory,
   getTagHref,
 } from '@/lib/docs/repository'
 import { getDocsSource } from '@/lib/docs/source'
 import { databaseDocumentRepository } from '@/server/repositories/document-repository'
 
-const compiler = createCompiler()
 export const dynamic = 'force-dynamic'
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(value))
-}
 
 async function loadPage(slugs: string[]) {
   const source = await getDocsSource()
@@ -118,34 +99,5 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug?:
 
   const page = await loadPage(slugs)
 
-  /* MDX Remote 会执行可信内容；未来接回后端时，只允许管理员维护的正文进入这里。 */
-  const { body: MdxContent, toc } = await compiler.compile({
-    source: page.data.content,
-    filePath: `${slugs.join('/')}.mdx`,
-  })
-  const categoryName =
-    page.data.categoryName || getDocumentCategory(page.data.category)?.name || page.data.category
-
-  return (
-    <DocsPage className="docs-article" toc={toc}>
-      <div className="docs-article__eyebrow">
-        <Link href={getCategoryHref(page.data.category)}>{categoryName}</Link>
-        <span>{formatDate(page.data.publishedAt)}</span>
-        <span>{page.data.readingMinutes} 分钟阅读</span>
-      </div>
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
-      <div className="docs-article__tags" aria-label="文章标签">
-        {page.data.tags.map((tag) => (
-          <Link href={getTagHref(tag)} key={tag}>
-            #{tag}
-          </Link>
-        ))}
-      </div>
-      <DocsBody className="docs-article__body">
-        <MdxContent components={getDocsMdxComponents()} />
-      </DocsBody>
-      <PageLastUpdate className="docs-article__updated" date={new Date(page.data.updatedAt)} />
-    </DocsPage>
-  )
+  return <ArticleDocument document={page.data} />
 }

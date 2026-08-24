@@ -33,6 +33,7 @@ import {
   adminTagsQueryOptions,
 } from '@/queries/articleQueries'
 import { logout } from '@/services/auth'
+import { getSafeCallbackUrl } from '@/lib/auth/safe-callback'
 import './index.scss'
 
 type LoginValues = { username: string; password: string }
@@ -68,7 +69,7 @@ export function AdminLogin() {
   async function submit(values: LoginValues) {
     try {
       await loginMutation.mutateAsync(values)
-      router.replace('/admin/articles')
+      router.replace(getSafeCallbackUrl(searchParams.get('callbackURL')))
     } catch (error) {
       message.error(errorText(error))
     }
@@ -136,8 +137,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           Lynco Hub <small>Content desk</small>
         </Link>
         <nav aria-label="后台导航">
-          <Link className={pathname.startsWith('/admin/articles') ? 'active' : ''} href="/admin/articles">文章</Link>
-          <Link className={pathname === '/admin/taxonomy' ? 'active' : ''} href="/admin/taxonomy">分类与标签</Link>
+          <Link href="/articles/manage">文档工作台</Link>
           <Link className={pathname === '/admin/security' ? 'active' : ''} href="/admin/security">安全设置</Link>
         </nav>
         <button type="button" onClick={() => void endSession()}>

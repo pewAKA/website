@@ -1,5 +1,5 @@
-import { AdminArticles } from '@/features/Admin'
+import { redirect } from 'next/navigation'
 
 export default function AdminArticlesPage() {
-  return <AdminArticles />
+  redirect('/articles/manage')
 }

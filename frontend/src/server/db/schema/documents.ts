@@ -17,8 +17,10 @@ export const articleDocumentMetadata = mysqlTable(
   'article_document_meta',
   {
     articleId: bigint('article_id', { mode: 'number' }).primaryKey(),
-    sourceKey: varchar('source_key', { length: 191 }).notNull(),
-    readingMinutes: int('reading_minutes').notNull().default(1),
+    // 后台手工创建的文章没有种子来源；仅导入脚本写入 sourceKey。
+    sourceKey: varchar('source_key', { length: 191 }),
+    // null 表示使用正文自动估算值，管理员填写时作为展示覆盖值。
+    readingMinutes: int('reading_minutes'),
     featured: boolean('featured').notNull().default(false),
     createdAt: datetime('created_at', { mode: 'date' })
       .notNull()

@@ -6,17 +6,20 @@ const mocks = vi.hoisted(() => ({
   requireAdmin: vi.fn(),
   listAdmin: vi.fn(),
   create: vi.fn(),
+  revalidate: vi.fn(),
 }))
 
 vi.mock('@/server/auth/session', () => ({ requireAdmin: mocks.requireAdmin }))
 vi.mock('@/server/services/article-service', () => ({
   articleService: { listAdmin: mocks.listAdmin, create: mocks.create },
 }))
+vi.mock('@/lib/docs/source', () => ({ revalidateDocsSource: mocks.revalidate }))
 
 describe('/api/admin/articles', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mocks.requireAdmin.mockResolvedValue({ user: { role: 'admin' } })
+    mocks.revalidate.mockResolvedValue(undefined)
   })
 
   it('保持分页参数和统一响应结构', async () => {
@@ -26,6 +29,7 @@ describe('/api/admin/articles', () => {
 
     expect(mocks.listAdmin).toHaveBeenCalledWith('DRAFT', 2, 50)
     expect(response.status).toBe(200)
+    expect(mocks.revalidate).not.toHaveBeenCalled()
     await expect(response.json()).resolves.toEqual({ code: 'OK', message: '操作成功', data: page })
   })
 
@@ -50,7 +54,7 @@ describe('/api/admin/articles', () => {
       }),
     }))
     expect(response.status).toBe(200)
+    expect(mocks.revalidate).toHaveBeenCalledOnce()
     await expect(response.json()).resolves.toMatchObject({ code: 'OK', data: article })
   })
 })
-

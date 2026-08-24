@@ -1,6 +1,7 @@
 import 'server-only'
 import type { Article } from '@/lib/articles/types'
 import { ApiError, isDuplicateEntry } from '@/server/http/errors'
+import { validateTrustedMdx } from '@/server/docs/validate-mdx'
 import {
   mysqlArticleRepository,
   type ArticleRepository,
@@ -24,6 +25,7 @@ export class ArticleService {
   }
 
   async create(input: ArticleUpsertInput) {
+    await validateTrustedMdx(input.content)
     await this.validateTaxonomy(input)
     try {
       const id = await this.repository.createArticle(input)
@@ -36,6 +38,7 @@ export class ArticleService {
 
   async update(id: number, input: ArticleUpsertInput) {
     await this.getAdmin(id)
+    await validateTrustedMdx(input.content)
     await this.validateTaxonomy(input)
     try {
       await this.repository.updateArticle(id, input)
@@ -47,7 +50,8 @@ export class ArticleService {
   }
 
   async publish(id: number) {
-    await this.getAdmin(id)
+    const article = await this.getAdmin(id)
+    await validateTrustedMdx(article.content)
     await this.repository.publishArticle(id)
     return this.getAdmin(id)
   }

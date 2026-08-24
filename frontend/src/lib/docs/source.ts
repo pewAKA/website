@@ -81,6 +81,11 @@ export function getDocsSource() {
   return documentLoader.get()
 }
 
+/** 管理端写操作完成后立即丢弃内存页面树，避免等待 staleTime。 */
+export async function revalidateDocsSource() {
+  await documentLoader.revalidate()
+}
+
 /** 测试可注入内存 Repository，不需要连接真实数据库。 */
 export function getDocsSourceForRepository(repository: DocumentRepository) {
   return dynamicLoader(createDocumentSource(repository), { baseUrl: '/articles' }).get()

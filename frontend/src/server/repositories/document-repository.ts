@@ -1,6 +1,7 @@
 import 'server-only'
 import { and, asc, desc, eq, inArray, isNotNull } from 'drizzle-orm'
 import type { DocumentRecord, DocumentRepository } from '@/lib/docs/types'
+import { estimateReadingMinutes } from '@/lib/docs/reading-time'
 import { sortByUpdatedAt } from '@/lib/docs/repository'
 import { db } from '@/server/db/client'
 import {
@@ -10,12 +11,6 @@ import {
   articleTags,
 } from '@/server/db/schema/business'
 import { articleDocumentMetadata } from '@/server/db/schema/documents'
-
-function estimateReadingMinutes(content: string) {
-  const cjkCharacters = content.match(/[\u3400-\u9fff]/g)?.length ?? 0
-  const latinWords = content.match(/[A-Za-z0-9_]+/g)?.length ?? 0
-  return Math.max(1, Math.ceil(cjkCharacters / 350 + latinWords / 220))
-}
 
 function toIsoString(value: Date) {
   return value.toISOString()

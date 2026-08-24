@@ -1,6 +1,7 @@
 import 'server-only'
 import { asc, count, desc, eq, inArray, sql } from 'drizzle-orm'
 import type { Article, ArticleCategory, ArticleTag, PageResponse } from '@/lib/articles/types'
+import { estimateReadingMinutes } from '@/lib/docs/reading-time'
 import { db } from '@/server/db/client'
 import {
   articleCategories,
@@ -42,6 +43,9 @@ const articleSelection = {
   categoryId: articleCategories.id,
   categoryName: articleCategories.name,
   categorySlug: articleCategories.slug,
+  categoryEnabled: articleCategories.enabled,
+  featured: articleDocumentMetadata.featured,
+  readingMinutes: articleDocumentMetadata.readingMinutes,
 }
 
 type SelectedArticle = Awaited<ReturnType<typeof selectArticleById>>
@@ -51,6 +55,7 @@ async function selectArticleById(id: number) {
     .select(articleSelection)
     .from(articles)
     .innerJoin(articleCategories, eq(articleCategories.id, articles.categoryId))
+    .leftJoin(articleDocumentMetadata, eq(articleDocumentMetadata.articleId, articles.id))
     .where(eq(articles.id, id))
     .limit(1)
   return row
@@ -83,10 +88,15 @@ async function hydrateArticle(row: NonNullable<SelectedArticle>): Promise<Articl
       name: row.categoryName,
       slug: row.categorySlug,
       sortOrder: null,
-      enabled: true,
+      enabled: row.categoryEnabled,
       articleCount: null,
     },
     tags: await selectArticleTags(row.id),
+    documentMeta: {
+      featured: row.featured ?? false,
+      readingMinutes: row.readingMinutes,
+      estimatedReadingMinutes: estimateReadingMinutes(row.content),
+    },
   }
 }
 
@@ -122,6 +132,7 @@ export const mysqlArticleRepository: ArticleRepository = {
       .select(articleSelection)
       .from(articles)
       .innerJoin(articleCategories, eq(articleCategories.id, articles.categoryId))
+      .leftJoin(articleDocumentMetadata, eq(articleDocumentMetadata.articleId, articles.id))
       .where(condition)
       .orderBy(
         desc(sql`COALESCE(${articles.publishedAt}, ${articles.updatedAt})`),
@@ -199,6 +210,12 @@ export const mysqlArticleRepository: ArticleRepository = {
           .insert(articleTagRelations)
           .values(input.tagIds.map((tagId) => ({ articleId: id, tagId })))
       }
+      await transaction.insert(articleDocumentMetadata).values({
+        articleId: id,
+        sourceKey: null,
+        featured: input.documentMeta.featured,
+        readingMinutes: input.documentMeta.readingMinutes,
+      })
       return id
     })
   },
@@ -241,6 +258,22 @@ export const mysqlArticleRepository: ArticleRepository = {
           .insert(articleTagRelations)
           .values(input.tagIds.map((tagId) => ({ articleId: id, tagId })))
       }
+      // 只更新可编辑元数据，保留 mock:* 来源标识，避免后台保存后丢失种子归属。
+      await transaction
+        .insert(articleDocumentMetadata)
+        .values({
+          articleId: id,
+          sourceKey: null,
+          featured: input.documentMeta.featured,
+          readingMinutes: input.documentMeta.readingMinutes,
+        })
+        .onDuplicateKeyUpdate({
+          set: {
+            featured: input.documentMeta.featured,
+            readingMinutes: input.documentMeta.readingMinutes,
+            updatedAt: new Date(),
+          },
+        })
     })
   },
 

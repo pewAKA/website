@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { ConfigProvider } from 'antd'
+import { App as AntApp, ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { createAppQueryClient } from '@/lib/queryClient'
 import { setUnauthorizedHandler } from '@/services/request'
@@ -33,7 +33,7 @@ export default function AdminProviders({ children }: { children: ReactNode }) {
           },
         }}
       >
-        {children}
+        <AntApp>{children}</AntApp>
       </ConfigProvider>
       {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>

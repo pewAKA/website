@@ -1,4 +1,4 @@
-import { and, eq, ne, or } from 'drizzle-orm'
+import { and, eq, inArray, ne, or } from 'drizzle-orm'
 import { documentCategories, mockDocuments } from '../src/lib/docs/mock-documents'
 import { getTagSlug } from '../src/lib/docs/repository'
 import {
@@ -18,8 +18,24 @@ const { db, pool } = await import('../src/server/db/client')
 const categoryConfig = new Map(documentCategories.map((category) => [category.slug, category]))
 let inserted = 0
 let updated = 0
+let skipped = 0
+const forceUpdate = process.argv.includes('--force-update')
 
 try {
+  if (forceUpdate) {
+    const sourceKeys = mockDocuments.map((document) => `mock:${document.id}`)
+    const existing = await db
+      .select({ sourceKey: articleDocumentMetadata.sourceKey })
+      .from(articleDocumentMetadata)
+      .where(inArray(articleDocumentMetadata.sourceKey, sourceKeys))
+    const overwrite = new Set(existing.flatMap((item) => (item.sourceKey ? [item.sourceKey] : [])))
+    const titles = mockDocuments
+      .filter((document) => overwrite.has(`mock:${document.id}`))
+      .map((document) => `- ${document.title}`)
+    console.log(`--force-update 将覆盖以下 ${titles.length} 篇受管种子：`)
+    console.log(titles.length > 0 ? titles.join('\n') : '- 无（本次只会新增缺失种子）')
+  }
+
   await db.transaction(async (transaction) => {
     const categoryIds = new Map<string, number>()
 
@@ -44,10 +60,12 @@ try {
       }
 
       if (slugMatch) {
-        await transaction
-          .update(articleCategories)
-          .set({ name: category.name, sortOrder: category.order, enabled: true })
-          .where(eq(articleCategories.id, slugMatch.id))
+        if (forceUpdate) {
+          await transaction
+            .update(articleCategories)
+            .set({ name: category.name, sortOrder: category.order, enabled: true })
+            .where(eq(articleCategories.id, slugMatch.id))
+        }
         categoryIds.set(category.slug, slugMatch.id)
       } else {
         const [result] = await transaction.insert(articleCategories).values({
@@ -76,7 +94,9 @@ try {
       }
 
       if (slugMatch) {
-        await transaction.update(articleTags).set({ name }).where(eq(articleTags.id, slugMatch.id))
+        if (forceUpdate) {
+          await transaction.update(articleTags).set({ name }).where(eq(articleTags.id, slugMatch.id))
+        }
         tagIds.set(name, slugMatch.id)
       } else {
         const [result] = await transaction.insert(articleTags).values({ name, slug })
@@ -115,6 +135,12 @@ try {
           .limit(1)
         if (slugConflict) {
           throw new Error(`文章 slug=${slug} 已被其他文章使用，导入已取消`)
+        }
+
+        if (!forceUpdate) {
+          // 已存在的受管种子默认视为后台内容，避免再次导入覆盖管理员修改。
+          skipped += 1
+          continue
         }
       } else {
         const [slugConflict] = await transaction
@@ -193,7 +219,7 @@ try {
   })
 
   console.log(
-    `Mock 文档导入完成：新增 ${inserted} 篇，更新 ${updated} 篇，共 ${mockDocuments.length} 篇`,
+    `Mock 文档导入完成：新增 ${inserted} 篇，更新 ${updated} 篇，跳过 ${skipped} 篇，共 ${mockDocuments.length} 篇`,
   )
 } finally {
   await pool.end()

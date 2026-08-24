@@ -14,6 +14,13 @@ export type ArticleTag = {
   articleCount: number | null
 }
 
+export type ArticleDocumentMeta = {
+  featured: boolean
+  /** null 表示由正文自动估算阅读时长。 */
+  readingMinutes: number | null
+  estimatedReadingMinutes: number
+}
+
 export type Article = {
   id: number
   title: string
@@ -27,6 +34,7 @@ export type Article = {
   updatedAt: string
   category: ArticleCategory
   tags: ArticleTag[]
+  documentMeta: ArticleDocumentMeta
 }
 
 export type PageResponse<T> = { items: T[]; total: number; page: number; pageSize: number }
@@ -39,6 +47,7 @@ export type ArticlePayload = {
   coverImageUrl?: string
   categoryId: number
   tagIds: number[]
+  documentMeta: Pick<ArticleDocumentMeta, 'featured' | 'readingMinutes'>
 }
 
 export type TaxonomyPayload = {
