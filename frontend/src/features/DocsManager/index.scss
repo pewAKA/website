@@ -1,11 +1,14 @@
 .workbench-shell {
+  // 工作台内部的吸附元素共用高度，保证贴顶后层级仍然连续。
+  --workbench-bar-height: 3.4rem;
+  --workbench-edit-actions-height: 4.2rem;
   width: 100%;
   color: var(--color-text);
 
   &__bar {
     position: sticky;
     z-index: 35;
-    top: var(--fd-nav-height, 3.5rem);
+    top: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -257,7 +260,7 @@
 .workbench-edit-actions {
   position: sticky;
   z-index: 30;
-  top: calc(var(--fd-nav-height, 3.5rem) + 3.4rem);
+  top: var(--workbench-bar-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -308,7 +311,8 @@
   resize: none;
 }
 
-.workbench-editor {
+// MDXEditor 会把弹层容器追加到 body，尺寸样式只作用于正文中的编辑器根节点。
+.workbench-canvas > .workbench-editor {
   min-height: 42rem;
   border-top: 1px solid var(--color-line-strong);
   border-bottom: 1px solid var(--color-line-strong);
@@ -317,7 +321,7 @@
   [role='toolbar'] {
     position: sticky;
     z-index: 15;
-    top: calc(var(--fd-nav-height, 3.5rem) + 7.6rem);
+    top: calc(var(--workbench-bar-height) + var(--workbench-edit-actions-height));
     padding: 0.55rem;
     border: 0;
     border-bottom: 1px solid var(--color-line);
@@ -325,7 +329,9 @@
     background: color-mix(in srgb, var(--color-page-bg) 96%, transparent);
     backdrop-filter: blur(12px);
   }
+}
 
+.workbench-editor {
   &__canvas {
     min-height: 38rem;
     padding: 2.5rem clamp(0.5rem, 2vw, 2rem) 8rem;
@@ -379,7 +385,7 @@
 
 .workbench-metadata {
   position: sticky;
-  top: calc(var(--fd-nav-height, 3.5rem) + 9rem);
+  top: calc(var(--workbench-bar-height) + 5.6rem);
   padding: 1.25rem;
   border-top: 1px solid var(--color-line-strong);
   background: color-mix(in srgb, var(--color-surface) 68%, transparent);
@@ -462,15 +468,19 @@
 }
 
 @media (max-width: 900px) {
+  .workbench-shell {
+    // 窄屏顶部栏换行后，更新同一组吸附偏移。
+    --workbench-bar-height: 5.5rem;
+  }
   .workbench-shell__bar { align-items: flex-start; flex-direction: column; padding-block: 0.8rem; nav { width: 100%; overflow-x: auto; } small { display: none; } }
   .workbench-heading { align-items: flex-start; flex-direction: column; }
   .workbench-document-list > article { grid-template-columns: 2rem 1fr; }
   .workbench-document-list__actions { grid-column: 2; flex-wrap: wrap; }
-  .workbench-edit-actions { top: calc(var(--fd-nav-height, 3.5rem) + 5.5rem); }
+  .workbench-edit-actions { top: var(--workbench-bar-height); }
   .workbench-edit-actions > div:first-child a { display: none; }
   .workbench-edit-grid { grid-template-columns: 1fr; }
   .workbench-metadata { position: static; grid-row: 1; }
-  .workbench-editor [role='toolbar'] { top: calc(var(--fd-nav-height, 3.5rem) + 9.7rem); overflow-x: auto; flex-wrap: nowrap; }
+  .workbench-canvas > .workbench-editor [role='toolbar'] { top: calc(var(--workbench-bar-height) + var(--workbench-edit-actions-height)); overflow-x: auto; flex-wrap: nowrap; }
   .workbench-taxonomy__grid { grid-template-columns: 1fr; }
   .workbench-taxonomy__fields { grid-template-columns: 1fr 1fr; }
   .workbench-mobile-save { position: fixed; z-index: 45; right: 0; bottom: 0; left: 0; display: block; padding: 0.7rem 1rem max(0.7rem, env(safe-area-inset-bottom)); border-top: 1px solid var(--color-line-strong); background: var(--color-page-bg); }
