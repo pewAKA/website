@@ -28,10 +28,10 @@
       max-width: 14ch;
       margin: 0;
       color: var(--color-heading);
-      font-size: clamp(3.4rem, 7.6vw, 7.2rem);
+      font-size: clamp(2.5rem, 4.2vw, 4.75rem);
       font-weight: 660;
-      line-height: 0.94;
-      letter-spacing: -0.072em;
+      line-height: 0.98;
+      letter-spacing: -0.06em;
       text-wrap: balance;
     }
 
@@ -553,10 +553,10 @@
       max-width: 14ch;
       margin: 0;
       color: var(--color-heading);
-      font-size: clamp(3.4rem, 7.4vw, 6.8rem);
+      font-size: clamp(2.5rem, 4vw, 4.5rem);
       font-weight: 660;
-      line-height: 0.94;
-      letter-spacing: -0.07em;
+      line-height: 0.98;
+      letter-spacing: -0.06em;
       overflow-wrap: anywhere;
       text-wrap: balance;
     }
@@ -864,7 +864,7 @@
     }
 
     &__intro h1 {
-      font-size: clamp(3rem, 15vw, 4.8rem);
+      font-size: clamp(2.25rem, 10vw, 3.25rem);
     }
 
     &__latest > header,

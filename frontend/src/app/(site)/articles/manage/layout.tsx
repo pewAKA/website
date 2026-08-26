@@ -15,8 +15,11 @@ export default async function DocsManageLayout({ children }: { children: ReactNo
   }
 
   return (
-    <AdminProviders>
-      <DocsWorkbenchShell>{children}</DocsWorkbenchShell>
-    </AdminProviders>
+    // 作为 DocsLayout 的直接网格项，避免窄屏时被自动网格压缩。
+    <div className="workbench-layout-main">
+      <AdminProviders>
+        <DocsWorkbenchShell>{children}</DocsWorkbenchShell>
+      </AdminProviders>
+    </div>
   )
 }

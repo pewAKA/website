@@ -22,14 +22,24 @@ export default function AdminProviders({ children }: { children: ReactNode }) {
         locale={zhCN}
         theme={{
           token: {
-            colorBgBase: 'var(--color-page-bg)',
-            colorBgContainer: 'var(--color-surface-strong)',
-            colorBorder: 'var(--color-line)',
-            colorLink: 'var(--color-primary)',
-            colorPrimary: 'var(--color-primary)',
-            colorText: 'var(--color-text)',
-            colorTextDescription: 'var(--color-muted)',
+            // Ant Design 会对主题色做派生计算，使用 CSS 变量会使浮层颜色回退为黑色。
+            colorBgBase: '#f1f2ef',
+            colorBgContainer: '#f8f9f6',
+            colorBgElevated: '#f8f9f6',
+            colorBorder: '#d8dad6',
+            colorLink: '#121311',
+            colorPrimary: '#121311',
+            colorPrimaryBg: '#e0e2de',
+            colorPrimaryBgHover: '#d8dad6',
+            colorText: '#252824',
+            colorTextDescription: '#656a63',
             borderRadius: 8,
+          },
+          components: {
+            Select: {
+              optionActiveBg: '#e9ebe7',
+              optionSelectedBg: '#e0e2de',
+            },
           },
         }}
       >

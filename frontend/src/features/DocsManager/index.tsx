@@ -176,7 +176,9 @@ export function DocsArticleLibrary() {
         <div className="workbench-document-list">
           {result.items.map((article, index) => (
             <article key={article.id}>
-              <span className="workbench-document-list__index">{String(index + 1).padStart(2, '0')}</span>
+              <span className="workbench-document-list__index">
+                {String(index + 1).padStart(2, '0')}
+              </span>
               <div className="workbench-document-list__content">
                 <div className="workbench-document-list__meta">
                   <span data-status={article.status}>
@@ -191,24 +193,34 @@ export function DocsArticleLibrary() {
                 </h2>
                 <p>{article.summary}</p>
                 <div className="workbench-document-list__tags">
-                  {article.tags.map((tag) => <span key={tag.id}>#{tag.name}</span>)}
+                  {article.tags.map((tag) => (
+                    <span key={tag.id}>#{tag.name}</span>
+                  ))}
                 </div>
               </div>
               <div className="workbench-document-list__actions">
                 {deleteCandidate === article.id ? (
                   <div className="workbench-delete-confirm" role="alert">
                     <strong>确认永久删除？</strong>
-                    <button type="button" onClick={() => setDeleteCandidate(null)}>取消</button>
-                    <button type="button" onClick={() => void remove(article)}>确认删除</button>
+                    <button type="button" onClick={() => setDeleteCandidate(null)}>
+                      取消
+                    </button>
+                    <button type="button" onClick={() => void remove(article)}>
+                      确认删除
+                    </button>
                   </div>
                 ) : (
                   <>
                     <Link href={`/articles/manage/${article.id}`}>编辑</Link>
-                    <Link href={`/articles/manage/preview/${article.id}`} target="_blank">预览</Link>
+                    <Link href={`/articles/manage/preview/${article.id}`} target="_blank">
+                      预览
+                    </Link>
                     <button type="button" onClick={() => void changePublication(article)}>
                       {article.status === 'PUBLISHED' ? '撤回' : '发布'}
                     </button>
-                    <button type="button" onClick={() => setDeleteCandidate(article.id)}>删除</button>
+                    <button type="button" onClick={() => setDeleteCandidate(article.id)}>
+                      删除
+                    </button>
                   </>
                 )}
               </div>
@@ -223,7 +235,9 @@ export function DocsArticleLibrary() {
 function LibrarySkeleton() {
   return (
     <div className="workbench-skeleton" aria-label="正在加载文章">
-      {[1, 2, 3].map((item) => <span key={item} />)}
+      {[1, 2, 3].map((item) => (
+        <span key={item} />
+      ))}
     </div>
   )
 }
@@ -309,7 +323,11 @@ export function DocsArticleEditor() {
       const anchor = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href]')
       if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download')) return
       const destination = new URL(anchor.href, window.location.href)
-      if (destination.origin !== window.location.origin || destination.href === window.location.href) return
+      if (
+        destination.origin !== window.location.origin ||
+        destination.href === window.location.href
+      )
+        return
 
       event.preventDefault()
       modal.confirm({
@@ -422,12 +440,19 @@ export function DocsArticleEditor() {
   if (loading) {
     return (
       <Form form={form} component={false}>
-        <main className="workbench-page workbench-editor-state"><LibrarySkeleton /></main>
+        <main className="workbench-page workbench-editor-state">
+          <LibrarySkeleton />
+        </main>
       </Form>
     )
   }
   if (loadError) {
-    return <main className="workbench-page workbench-state workbench-state--error"><strong>编辑器加载失败</strong><p>{errorText(loadError)}</p></main>
+    return (
+      <main className="workbench-page workbench-state workbench-state--error">
+        <strong>编辑器加载失败</strong>
+        <p>{errorText(loadError)}</p>
+      </main>
+    )
   }
 
   return (
@@ -435,25 +460,40 @@ export function DocsArticleEditor() {
       <header className="workbench-edit-actions">
         <div>
           <Link href="/articles/manage">← 文章库</Link>
-          <span data-status={article?.status || 'DRAFT'}>{article?.status === 'PUBLISHED' ? '已发布' : '草稿'}</span>
+          <span data-status={article?.status || 'DRAFT'}>
+            {article?.status === 'PUBLISHED' ? '已发布' : '草稿'}
+          </span>
           {dirty && <span className="is-dirty">有未保存修改</span>}
         </div>
         <div>
-          {id && <Link href={`/articles/manage/preview/${id}`} target="_blank">精准预览</Link>}
+          {id && (
+            <Link href={`/articles/manage/preview/${id}`} target="_blank">
+              精准预览
+            </Link>
+          )}
           {article && (
             <Button disabled={dirty} onClick={() => void changePublication()}>
               {article.status === 'PUBLISHED' ? '撤回' : '发布'}
             </Button>
           )}
-          <Button loading={saving} type="primary" onClick={() => form.submit()}>保存 <kbd>⌘S</kbd></Button>
+          <Button loading={saving} type="primary" onClick={() => form.submit()}>
+            保存 <kbd>⌘S</kbd>
+          </Button>
         </div>
       </header>
 
       {recovery && (
         <div className="workbench-recovery" role="status">
-          <div><strong>发现较新的本地副本</strong><span>{formatDate(recovery.savedAt)} 自动保存于此浏览器</span></div>
-          <button type="button" onClick={discardDraft}>丢弃</button>
-          <button type="button" onClick={restoreDraft}>恢复副本</button>
+          <div>
+            <strong>发现较新的本地副本</strong>
+            <span>{formatDate(recovery.savedAt)} 自动保存于此浏览器</span>
+          </div>
+          <button type="button" onClick={discardDraft}>
+            丢弃
+          </button>
+          <button type="button" onClick={restoreDraft}>
+            恢复副本
+          </button>
         </div>
       )}
       {categories.length === 0 && (
@@ -467,46 +507,114 @@ export function DocsArticleEditor() {
         form={form}
         layout="vertical"
         requiredMark={false}
-        onFieldsChange={() => { setDirty(true); setFormRevision((value) => value + 1) }}
+        onFieldsChange={() => {
+          setDirty(true)
+          setFormRevision((value) => value + 1)
+        }}
         onFinish={(values) => void save(values)}
       >
         <div className="workbench-edit-grid">
           <section className="workbench-canvas">
-            <Form.Item name="title" rules={[{ required: true, message: '请输入标题' }, { max: 160 }]}>
-              <Input className="workbench-title-input" placeholder="文章标题" variant="borderless" />
+            <Form.Item
+              name="title"
+              rules={[{ required: true, message: '请输入标题' }, { max: 160 }]}
+            >
+              {/* 标题可随内容增高，避免宽屏两栏布局中长标题被单行输入框截断。 */}
+              <Input.TextArea
+                autoSize={{ minRows: 1, maxRows: 3 }}
+                className="workbench-title-input"
+                placeholder="文章标题"
+                variant="borderless"
+              />
             </Form.Item>
-            <Form.Item name="summary" rules={[{ required: true, message: '请输入摘要' }, { max: 360 }]}>
-              <Input.TextArea autoSize={{ minRows: 2, maxRows: 5 }} className="workbench-summary-input" placeholder="一句话说明这篇文档解决什么问题。" variant="borderless" />
+            <Form.Item
+              name="summary"
+              rules={[{ required: true, message: '请输入摘要' }, { max: 360 }]}
+            >
+              <Input.TextArea
+                autoSize={{ minRows: 2, maxRows: 5 }}
+                className="workbench-summary-input"
+                placeholder="一句话说明这篇文档解决什么问题。"
+                variant="borderless"
+              />
             </Form.Item>
-            {parseError && <div className="workbench-parse-error"><strong>MDX 解析失败</strong><code>{parseError}</code></div>}
+            {parseError && (
+              <div className="workbench-parse-error">
+                <strong>MDX 解析失败</strong>
+                <code>{parseError}</code>
+              </div>
+            )}
             <MdxWorkbenchEditor
               markdown={content}
-              onChange={(value) => { setContent(value); setDirty(true) }}
+              onChange={(value) => {
+                setContent(value)
+                setDirty(true)
+              }}
               onParseError={setParseError}
             />
           </section>
 
           <aside className="workbench-metadata" aria-label="文章元数据">
             <p>Document settings</p>
-            <Form.Item label="URL 标识" name="slug" rules={[{ required: true, message: '请输入 slug' }, { pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*$/, message: '仅支持小写字母、数字与连字符' }]}>
+            <Form.Item
+              label="URL 标识"
+              name="slug"
+              rules={[
+                { required: true, message: '请输入 slug' },
+                { pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*$/, message: '仅支持小写字母、数字与连字符' },
+              ]}
+            >
               <Input prefix="/" placeholder="server-boundaries" />
             </Form.Item>
-            <Form.Item label="分类" name="categoryId" rules={[{ required: true, message: '请选择分类' }]}>
-              <Select options={categories.filter((item) => item.enabled || item.id === article?.category.id).map((item) => ({ label: item.name, value: item.id }))} placeholder="选择分类" />
+            <Form.Item
+              label="分类"
+              name="categoryId"
+              rules={[{ required: true, message: '请选择分类' }]}
+            >
+              <Select
+                options={categories
+                  .filter((item) => item.enabled || item.id === article?.category.id)
+                  .map((item) => ({ label: item.name, value: item.id }))}
+                placeholder="选择分类"
+              />
             </Form.Item>
             <Form.Item label="标签" name="tagIds">
-              <Select mode="multiple" options={tags.map((item) => ({ label: item.name, value: item.id }))} placeholder="选择标签" />
+              <Select
+                mode="multiple"
+                options={tags.map((item) => ({ label: item.name, value: item.id }))}
+                placeholder="选择标签"
+              />
             </Form.Item>
-            <Form.Item label="封面地址" name="coverImageUrl"><Input placeholder="/media/…" /></Form.Item>
-            <label className="workbench-upload"><input accept="image/jpeg,image/png,image/webp" type="file" onChange={(event) => void upload(event)} /><span>{uploadMutation.isPending ? '上传中…' : '上传封面图片'}</span></label>
+            <Form.Item label="封面地址" name="coverImageUrl">
+              <Input placeholder="/media/…" />
+            </Form.Item>
+            <label className="workbench-upload">
+              <input
+                accept="image/jpeg,image/png,image/webp"
+                type="file"
+                onChange={(event) => void upload(event)}
+              />
+              <span>{uploadMutation.isPending ? '上传中…' : '上传封面图片'}</span>
+            </label>
             <div className="workbench-metadata__rule" />
-            <Form.Item label="首页精选" name={['documentMeta', 'featured']} valuePropName="checked"><Switch /></Form.Item>
-            <Form.Item label={`阅读时长（自动约 ${effectiveReading} 分钟）`} name={['documentMeta', 'readingMinutes']}><InputNumber min={1} max={120} placeholder="自动估算" /></Form.Item>
+            <Form.Item label="首页精选" name={['documentMeta', 'featured']} valuePropName="checked">
+              <Switch />
+            </Form.Item>
+            <Form.Item
+              label={`阅读时长（自动约 ${effectiveReading} 分钟）`}
+              name={['documentMeta', 'readingMinutes']}
+            >
+              <InputNumber min={1} max={120} placeholder="自动估算" />
+            </Form.Item>
             <small>留空时按中英文正文自动估算；填写后作为公开展示覆盖值。</small>
           </aside>
         </div>
       </Form>
-      <div className="workbench-mobile-save"><Button block loading={saving} type="primary" onClick={() => form.submit()}>保存当前修改</Button></div>
+      <div className="workbench-mobile-save">
+        <Button block loading={saving} type="primary" onClick={() => form.submit()}>
+          保存当前修改
+        </Button>
+      </div>
     </main>
   )
 }

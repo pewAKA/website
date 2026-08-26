@@ -2,6 +2,9 @@
   // 工作台内部的吸附元素共用高度，保证贴顶后层级仍然连续。
   --workbench-bar-height: 3.4rem;
   --workbench-edit-actions-height: 4.2rem;
+  container-name: workbench;
+  container-type: inline-size;
+  min-width: 0;
   width: 100%;
   color: var(--color-text);
 
@@ -34,7 +37,9 @@
       letter-spacing: 0.04em;
     }
 
-    small { color: var(--color-muted); }
+    small {
+      color: var(--color-muted);
+    }
 
     nav a,
     nav button {
@@ -64,6 +69,11 @@
   }
 }
 
+.workbench-layout-main {
+  grid-area: main;
+  min-width: 0;
+}
+
 .workbench-page {
   width: 100%;
   min-height: 70dvh;
@@ -89,10 +99,10 @@
   h1 {
     margin: 0;
     color: var(--color-heading);
-    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-size: clamp(2.5rem, 3.25vw, 3.75rem);
     font-weight: 650;
-    line-height: 0.92;
-    letter-spacing: -0.07em;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
   }
 
   > div > span {
@@ -115,7 +125,9 @@
   text-decoration: none;
   transition: transform 180ms ease;
 
-  &:hover { transform: translateY(-2px); }
+  &:hover {
+    transform: translateY(-2px);
+  }
 }
 
 .workbench-filter {
@@ -160,6 +172,10 @@
     font-size: 0.66rem;
   }
 
+  &__content {
+    min-width: 0;
+  }
+
   &__meta,
   &__tags {
     display: flex;
@@ -170,7 +186,9 @@
     font-size: 0.64rem;
   }
 
-  &__meta span[data-status='PUBLISHED'] { color: var(--color-accent); }
+  &__meta span[data-status='PUBLISHED'] {
+    color: var(--color-accent);
+  }
 
   h2 {
     max-width: 40rem;
@@ -179,8 +197,13 @@
     line-height: 1.1;
     letter-spacing: -0.035em;
 
-    a { color: inherit; text-decoration: none; }
-    a:hover { color: var(--color-accent); }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    a:hover {
+      color: var(--color-accent);
+    }
   }
 
   p {
@@ -210,7 +233,10 @@
     }
 
     a:hover,
-    button:hover { border-color: currentColor; color: var(--color-text); }
+    button:hover {
+      border-color: currentColor;
+      color: var(--color-text);
+    }
   }
 }
 
@@ -223,8 +249,13 @@
   border: 1px solid #b84336;
   background: color-mix(in srgb, #b84336 7%, var(--color-page-bg));
 
-  strong { grid-column: 1 / -1; font-size: 0.72rem; }
-  button:last-child { color: #a33125; }
+  strong {
+    grid-column: 1 / -1;
+    font-size: 0.72rem;
+  }
+  button:last-child {
+    color: #a33125;
+  }
 }
 
 .workbench-state {
@@ -235,9 +266,16 @@
   padding: 4rem 0;
   border-bottom: 1px solid var(--color-line-strong);
 
-  strong { font-size: 1.4rem; }
-  p { margin: 0; color: var(--color-muted); }
-  &--error strong { color: #a33125; }
+  strong {
+    font-size: 1.4rem;
+  }
+  p {
+    margin: 0;
+    color: var(--color-muted);
+  }
+  &--error strong {
+    color: #a33125;
+  }
 }
 
 .workbench-skeleton {
@@ -251,7 +289,11 @@
   }
 }
 
-@keyframes workbench-shimmer { to { background-position: 200% 0; } }
+@keyframes workbench-shimmer {
+  to {
+    background-position: 200% 0;
+  }
+}
 
 .workbench-edit-page {
   padding-top: 0;
@@ -272,11 +314,34 @@
   background: color-mix(in srgb, var(--color-page-bg) 94%, transparent);
   backdrop-filter: blur(18px);
 
-  > div { display: flex; align-items: center; gap: 0.75rem; }
-  a { color: var(--color-muted); font-family: var(--font-mono), monospace; font-size: 0.68rem; text-decoration: none; }
-  span[data-status] { padding: 0.28rem 0.5rem; background: var(--color-surface); font-family: var(--font-mono), monospace; font-size: 0.62rem; }
-  span.is-dirty { color: #a65f00; font-family: var(--font-mono), monospace; font-size: 0.64rem; }
-  kbd { margin-left: 0.35rem; opacity: 0.55; font-family: var(--font-mono), monospace; font-size: 0.58rem; }
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  a {
+    color: var(--color-muted);
+    font-family: var(--font-mono), monospace;
+    font-size: 0.68rem;
+    text-decoration: none;
+  }
+  span[data-status] {
+    padding: 0.28rem 0.5rem;
+    background: var(--color-surface);
+    font-family: var(--font-mono), monospace;
+    font-size: 0.62rem;
+  }
+  span.is-dirty {
+    color: #a65f00;
+    font-family: var(--font-mono), monospace;
+    font-size: 0.64rem;
+  }
+  kbd {
+    margin-left: 0.35rem;
+    opacity: 0.55;
+    font-family: var(--font-mono), monospace;
+    font-size: 0.58rem;
+  }
 }
 
 .workbench-edit-grid {
@@ -289,17 +354,21 @@
 .workbench-canvas {
   min-width: 0;
 
-  .ant-form-item { margin-bottom: 0.35rem; }
+  .ant-form-item {
+    margin-bottom: 0.35rem;
+  }
 }
 
 .workbench-title-input.ant-input {
   padding: 0;
   color: var(--color-heading);
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(2.6rem, 5.5vw, 5.8rem);
+  font-size: clamp(1.75rem, 2.4vw, 2.5rem);
   font-weight: 650;
-  line-height: 1;
-  letter-spacing: -0.065em;
+  line-height: 1.12;
+  letter-spacing: -0.05em;
+  overflow: hidden;
+  resize: none;
 }
 
 .workbench-summary-input.ant-input {
@@ -340,12 +409,34 @@
     font-size: 1rem;
     line-height: 1.85;
 
-    h1, h2, h3, h4 { color: var(--color-heading); letter-spacing: -0.035em; }
-    h2 { margin-top: 2.8rem; font-size: 1.9rem; }
-    h3 { margin-top: 2rem; font-size: 1.4rem; }
-    p, li { max-width: 48rem; }
-    blockquote { margin-left: 0; padding-left: 1.2rem; border-left: 2px solid var(--color-accent); color: var(--color-muted); }
-    code { font-family: var(--font-mono), monospace; }
+    h1,
+    h2,
+    h3,
+    h4 {
+      color: var(--color-heading);
+      letter-spacing: -0.035em;
+    }
+    h2 {
+      margin-top: 2.8rem;
+      font-size: 1.9rem;
+    }
+    h3 {
+      margin-top: 2rem;
+      font-size: 1.4rem;
+    }
+    p,
+    li {
+      max-width: 48rem;
+    }
+    blockquote {
+      margin-left: 0;
+      padding-left: 1.2rem;
+      border-left: 2px solid var(--color-accent);
+      color: var(--color-muted);
+    }
+    code {
+      font-family: var(--font-mono), monospace;
+    }
   }
 
   &__loading {
@@ -370,17 +461,34 @@
   background: color-mix(in srgb, #b84336 6%, var(--color-page-bg));
   font-size: 0.78rem;
 
-  code { overflow: auto; color: #8e2d23; font-family: var(--font-mono), monospace; }
+  code {
+    overflow: auto;
+    color: #8e2d23;
+    font-family: var(--font-mono), monospace;
+  }
 }
 
 .workbench-recovery {
   border-color: var(--color-line-strong);
   background: var(--color-surface);
 
-  > div { display: grid; margin-right: auto; }
-  span { color: var(--color-muted); font-size: 0.72rem; }
-  button { padding: 0.45rem 0.7rem; border: 1px solid var(--color-line-strong); background: transparent; cursor: pointer; }
-  &--warning { justify-content: space-between; }
+  > div {
+    display: grid;
+    margin-right: auto;
+  }
+  span {
+    color: var(--color-muted);
+    font-size: 0.72rem;
+  }
+  button {
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--color-line-strong);
+    background: transparent;
+    cursor: pointer;
+  }
+  &--warning {
+    justify-content: space-between;
+  }
 }
 
 .workbench-metadata {
@@ -399,9 +507,22 @@
     text-transform: uppercase;
   }
 
-  .ant-form-item-label label { font-family: var(--font-mono), monospace; font-size: 0.66rem; }
-  > small { display: block; margin-top: -0.6rem; color: var(--color-muted); font-size: 0.68rem; line-height: 1.5; }
-  &__rule { height: 1px; margin: 1.5rem 0; background: var(--color-line); }
+  .ant-form-item-label label {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.66rem;
+  }
+  > small {
+    display: block;
+    margin-top: -0.6rem;
+    color: var(--color-muted);
+    font-size: 0.68rem;
+    line-height: 1.5;
+  }
+  &__rule {
+    height: 1px;
+    margin: 1.5rem 0;
+    background: var(--color-line);
+  }
 }
 
 .workbench-upload {
@@ -411,11 +532,20 @@
   font-family: var(--font-mono), monospace;
   font-size: 0.65rem;
   cursor: pointer;
-  input { position: absolute; width: 1px; height: 1px; opacity: 0; }
-  &:hover { color: var(--color-accent); }
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  &:hover {
+    color: var(--color-accent);
+  }
 }
 
-.workbench-mobile-save { display: none; }
+.workbench-mobile-save {
+  display: none;
+}
 
 .workbench-taxonomy__grid {
   display: grid;
@@ -423,34 +553,82 @@
   gap: clamp(2rem, 5vw, 6rem);
   border-top: 1px solid var(--color-line-strong);
 
-  > section { padding-top: 2rem; }
+  > section {
+    padding-top: 2rem;
+  }
 }
 
 .workbench-taxonomy__intro {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
-  > span { color: var(--color-muted); font-family: var(--font-mono), monospace; font-size: 0.66rem; }
-  h2 { margin: 0; font-size: 1.8rem; letter-spacing: -0.04em; }
-  p { margin: 0.4rem 0 0; color: var(--color-muted); font-size: 0.8rem; }
+  > span {
+    color: var(--color-muted);
+    font-family: var(--font-mono), monospace;
+    font-size: 0.66rem;
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    letter-spacing: -0.04em;
+  }
+  p {
+    margin: 0.4rem 0 0;
+    color: var(--color-muted);
+    font-size: 0.8rem;
+  }
 }
 
 .workbench-taxonomy__fields {
   display: grid;
   grid-template-columns: 1fr 1fr 5rem 6rem;
   gap: 0.7rem;
-  &--tag { grid-template-columns: 1fr 1fr; }
+  &--tag {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-.workbench-taxonomy__form-actions { display: flex; gap: 0.6rem; margin-bottom: 2rem; }
+.workbench-taxonomy__form-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
 .workbench-taxonomy__items {
   border-top: 1px solid var(--color-line-strong);
-  article { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--color-line); }
-  article > div:first-child { display: grid; }
-  span { color: var(--color-muted); font-family: var(--font-mono), monospace; font-size: 0.62rem; }
-  button { margin-left: 0.75rem; padding: 0; border: 0; border-bottom: 1px solid transparent; background: transparent; color: var(--color-muted); font-family: var(--font-mono), monospace; font-size: 0.62rem; cursor: pointer; }
-  button:hover { border-color: currentColor; color: var(--color-text); }
-  button.danger { color: #a33125; }
+  article {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  article > div:first-child {
+    display: grid;
+  }
+  span {
+    color: var(--color-muted);
+    font-family: var(--font-mono), monospace;
+    font-size: 0.62rem;
+  }
+  button {
+    margin-left: 0.75rem;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    background: transparent;
+    color: var(--color-muted);
+    font-family: var(--font-mono), monospace;
+    font-size: 0.62rem;
+    cursor: pointer;
+  }
+  button:hover {
+    border-color: currentColor;
+    color: var(--color-text);
+  }
+  button.danger {
+    color: #a33125;
+  }
 }
 
 .docs-preview-banner {
@@ -462,41 +640,169 @@
   padding: 1rem;
   border: 1px solid var(--color-line-strong);
   background: var(--color-surface);
-  > div { display: grid; }
-  span { color: var(--color-muted); font-size: 0.74rem; }
-  a { color: var(--color-accent); font-family: var(--font-mono), monospace; font-size: 0.68rem; }
-}
-
-@media (max-width: 900px) {
-  .workbench-shell {
-    // 窄屏顶部栏换行后，更新同一组吸附偏移。
-    --workbench-bar-height: 5.5rem;
+  > div {
+    display: grid;
   }
-  .workbench-shell__bar { align-items: flex-start; flex-direction: column; padding-block: 0.8rem; nav { width: 100%; overflow-x: auto; } small { display: none; } }
-  .workbench-heading { align-items: flex-start; flex-direction: column; }
-  .workbench-document-list > article { grid-template-columns: 2rem 1fr; }
-  .workbench-document-list__actions { grid-column: 2; flex-wrap: wrap; }
-  .workbench-edit-actions { top: var(--workbench-bar-height); }
-  .workbench-edit-actions > div:first-child a { display: none; }
-  .workbench-edit-grid { grid-template-columns: 1fr; }
-  .workbench-metadata { position: static; grid-row: 1; }
-  .workbench-canvas > .workbench-editor [role='toolbar'] { top: calc(var(--workbench-bar-height) + var(--workbench-edit-actions-height)); overflow-x: auto; flex-wrap: nowrap; }
-  .workbench-taxonomy__grid { grid-template-columns: 1fr; }
-  .workbench-taxonomy__fields { grid-template-columns: 1fr 1fr; }
-  .workbench-mobile-save { position: fixed; z-index: 45; right: 0; bottom: 0; left: 0; display: block; padding: 0.7rem 1rem max(0.7rem, env(safe-area-inset-bottom)); border-top: 1px solid var(--color-line-strong); background: var(--color-page-bg); }
+  span {
+    color: var(--color-muted);
+    font-size: 0.74rem;
+  }
+  a {
+    color: var(--color-accent);
+    font-family: var(--font-mono), monospace;
+    font-size: 0.68rem;
+  }
 }
 
-@media (max-width: 560px) {
-  .workbench-page { padding-inline: 0.9rem; }
-  .workbench-heading h1 { font-size: 3.25rem; }
-  .workbench-edit-actions { margin-inline: -0.9rem; padding-inline: 0.9rem; }
+@container workbench (max-width: 56.25rem) {
+  .workbench-shell__bar {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+    height: 5rem;
+    min-height: 5rem;
+    padding-block: 0.45rem;
+
+    nav {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    nav a,
+    nav button {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    small {
+      display: none;
+    }
+  }
+
+  .workbench-page {
+    padding-block: 2.5rem 3.5rem;
+  }
+  .workbench-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-bottom: 2.5rem;
+  }
+  .workbench-primary-link {
+    justify-content: space-between;
+    min-width: 9rem;
+  }
+
+  .workbench-filter {
+    overflow-x: auto;
+
+    button {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+  }
+
+  .workbench-document-list > article {
+    grid-template-columns: 1.75rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 1.5rem;
+  }
+  .workbench-document-list__actions {
+    grid-column: 2;
+    flex-wrap: wrap;
+  }
+
+  // 三层吸附栏共享实际高度，滚动时不留下视觉断层。
+  .workbench-edit-page {
+    --workbench-bar-height: 5rem;
+    --workbench-edit-actions-height: 3.5rem;
+    // 覆盖工作台页面的通用顶边距，让保存栏紧随顶部栏进入正常流。
+    padding-top: 0;
+  }
+  .workbench-edit-actions {
+    top: var(--workbench-bar-height);
+    flex-wrap: wrap;
+    min-height: var(--workbench-edit-actions-height);
+    padding-block: 0.5rem;
+  }
+  .workbench-edit-actions > div {
+    flex-wrap: wrap;
+  }
+  .workbench-edit-actions > div:first-child a {
+    display: none;
+  }
+  .workbench-edit-actions > div:last-child {
+    margin-left: auto;
+  }
+  .workbench-edit-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+  .workbench-title-input.ant-input {
+    font-size: clamp(1.625rem, 3.4vw, 2.125rem);
+  }
+  .workbench-metadata {
+    position: static;
+    grid-row: auto;
+  }
+  .workbench-canvas > .workbench-editor [role='toolbar'] {
+    top: calc(var(--workbench-bar-height) + var(--workbench-edit-actions-height));
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  .workbench-taxonomy__grid {
+    grid-template-columns: 1fr;
+  }
+  .workbench-taxonomy__fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@container workbench (max-width: 35rem) {
+  .workbench-page {
+    padding-inline: 0.9rem;
+  }
+  .workbench-heading h1 {
+    font-size: clamp(2.25rem, 10vw, 2.75rem);
+  }
+  .workbench-edit-actions {
+    margin-inline: -0.9rem;
+    padding-inline: 0.9rem;
+  }
   .workbench-edit-actions > div:nth-child(2) > a,
-  .workbench-edit-actions > div:nth-child(2) > button:not(:last-child) { display: none; }
-  .workbench-taxonomy__fields { grid-template-columns: 1fr; }
-  .workbench-recovery { align-items: flex-start; flex-wrap: wrap; }
+  .workbench-edit-actions > div:nth-child(2) > button:not(:last-child) {
+    display: none;
+  }
+  .workbench-taxonomy__fields {
+    grid-template-columns: 1fr;
+  }
+  .workbench-recovery {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+// 仅在真实手机视口提供底部保存入口；中窄屏保留顶部保存栏以避免重复操作。
+@media (max-width: 560px) {
+  .workbench-mobile-save {
+    position: fixed;
+    z-index: 45;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: block;
+    padding: 0.7rem 1rem max(0.7rem, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--color-line-strong);
+    background: var(--color-page-bg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .workbench-skeleton span { animation: none; }
-  .workbench-primary-link { transition: none; }
+  .workbench-skeleton span {
+    animation: none;
+  }
+  .workbench-primary-link {
+    transition: none;
+  }
 }
