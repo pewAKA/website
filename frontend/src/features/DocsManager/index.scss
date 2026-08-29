@@ -33,12 +33,22 @@
     a,
     button {
       font-family: var(--font-mono), monospace;
-      font-size: 0.68rem;
       letter-spacing: 0.04em;
+    }
+
+    strong {
+      font-size: 0.9rem;
+      font-weight: 650;
     }
 
     small {
       color: var(--color-muted);
+      font-size: 0.78rem;
+    }
+
+    a,
+    button {
+      font-size: 0.82rem;
     }
 
     nav a,
@@ -77,51 +87,33 @@
 .workbench-page {
   width: 100%;
   min-height: 70dvh;
-  padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 3vw, 2.5rem) 7rem;
+  // 内容在顶部栏后尽快进入视野，避免管理页首屏出现无效留白。
+  padding: clamp(2.5rem, 4vw, 3.5rem) clamp(1rem, 3vw, 2.5rem) 7rem;
 }
 
-.workbench-heading {
+.workbench-page.workbench-library {
+  padding-top: 0;
+}
+
+.workbench-library__bar {
   display: flex;
-  align-items: end;
+  align-items: stretch;
   justify-content: space-between;
-  gap: 2rem;
-  padding-bottom: clamp(2.5rem, 5vw, 4.5rem);
-
-  p {
-    margin: 0 0 0.8rem;
-    color: var(--color-accent);
-    font-family: var(--font-mono), monospace;
-    font-size: 0.67rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  h1 {
-    margin: 0;
-    color: var(--color-heading);
-    font-size: clamp(2.5rem, 3.25vw, 3.75rem);
-    font-weight: 650;
-    line-height: 0.98;
-    letter-spacing: -0.055em;
-  }
-
-  > div > span {
-    display: block;
-    margin-top: 1.4rem;
-    color: var(--color-muted);
-    line-height: 1.7;
-  }
+  gap: 1rem;
+  border-bottom: 1px solid var(--color-line-strong);
 }
 
-.workbench-primary-link {
+.workbench-library__create {
   display: inline-flex;
   align-items: center;
-  gap: 2rem;
-  padding: 1rem 1.15rem;
+  align-self: center;
+  flex: 0 0 auto;
+  padding: 0.7rem 1rem;
   background: var(--color-primary);
   color: var(--color-page-bg);
   font-family: var(--font-mono), monospace;
-  font-size: 0.72rem;
+  font-size: 0.82rem;
+  line-height: 1;
   text-decoration: none;
   transition: transform 180ms ease;
 
@@ -133,9 +125,8 @@
 .workbench-filter {
   display: flex;
   gap: 0.25rem;
-  padding: 0.75rem 0;
-  border-top: 1px solid var(--color-line-strong);
-  border-bottom: 1px solid var(--color-line);
+  min-width: 0;
+  padding: 0.65rem 0;
 
   button {
     padding: 0.55rem 0.85rem;
@@ -143,7 +134,7 @@
     background: transparent;
     color: var(--color-muted);
     font-family: var(--font-mono), monospace;
-    font-size: 0.68rem;
+    font-size: 0.82rem;
     cursor: pointer;
   }
 
@@ -161,7 +152,7 @@
     display: grid;
     grid-template-columns: 2.5rem minmax(0, 1fr) auto;
     gap: clamp(1rem, 2.5vw, 2.5rem);
-    padding: 2rem 0;
+    padding: 1.5rem 0;
     border-bottom: 1px solid var(--color-line);
   }
 
@@ -169,7 +160,7 @@
     padding-top: 0.2rem;
     color: var(--color-muted);
     font-family: var(--font-mono), monospace;
-    font-size: 0.66rem;
+    font-size: 0.78rem;
   }
 
   &__content {
@@ -183,7 +174,7 @@
     gap: 0.8rem;
     color: var(--color-muted);
     font-family: var(--font-mono), monospace;
-    font-size: 0.64rem;
+    font-size: 0.78rem;
   }
 
   &__meta span[data-status='PUBLISHED'] {
@@ -227,7 +218,7 @@
       background: transparent;
       color: var(--color-muted);
       font-family: var(--font-mono), monospace;
-      font-size: 0.65rem;
+      font-size: 0.8rem;
       cursor: pointer;
       text-decoration: none;
     }
@@ -251,7 +242,7 @@
 
   strong {
     grid-column: 1 / -1;
-    font-size: 0.72rem;
+    font-size: 0.82rem;
   }
   button:last-child {
     color: #a33125;
@@ -322,25 +313,25 @@
   a {
     color: var(--color-muted);
     font-family: var(--font-mono), monospace;
-    font-size: 0.68rem;
+    font-size: 0.8rem;
     text-decoration: none;
   }
   span[data-status] {
     padding: 0.28rem 0.5rem;
     background: var(--color-surface);
     font-family: var(--font-mono), monospace;
-    font-size: 0.62rem;
+    font-size: 0.72rem;
   }
   span.is-dirty {
     color: #a65f00;
     font-family: var(--font-mono), monospace;
-    font-size: 0.64rem;
+    font-size: 0.74rem;
   }
   kbd {
     margin-left: 0.35rem;
     opacity: 0.55;
     font-family: var(--font-mono), monospace;
-    font-size: 0.58rem;
+    font-size: 0.68rem;
   }
 }
 
@@ -502,21 +493,29 @@
     margin: 0 0 1.5rem;
     color: var(--color-accent);
     font-family: var(--font-mono), monospace;
-    font-size: 0.64rem;
+    font-size: 0.72rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
 
   .ant-form-item-label label {
     font-family: var(--font-mono), monospace;
-    font-size: 0.66rem;
+    font-size: 0.82rem;
   }
+
+  .ant-input,
+  .ant-input-number-input,
+  .ant-select-selection-item,
+  .ant-select-selection-placeholder {
+    font-size: 0.95rem;
+  }
+
   > small {
     display: block;
     margin-top: -0.6rem;
     color: var(--color-muted);
-    font-size: 0.68rem;
-    line-height: 1.5;
+    font-size: 0.8rem;
+    line-height: 1.6;
   }
   &__rule {
     height: 1px;
@@ -530,7 +529,7 @@
   margin-top: -0.8rem;
   color: var(--color-muted);
   font-family: var(--font-mono), monospace;
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   cursor: pointer;
   input {
     position: absolute;
@@ -547,79 +546,148 @@
   display: none;
 }
 
-.workbench-taxonomy__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 5vw, 6rem);
-  border-top: 1px solid var(--color-line-strong);
-
-  > section {
-    padding-top: 2rem;
-  }
+.workbench-page.workbench-taxonomy {
+  padding-top: 0;
 }
 
-.workbench-taxonomy__intro {
+.workbench-taxonomy__bar {
   display: flex;
+  align-items: stretch;
+  justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 2rem;
-  > span {
+  max-width: 72rem;
+  border-bottom: 1px solid var(--color-line-strong);
+}
+
+.workbench-taxonomy__tabs {
+  display: flex;
+  min-width: 0;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+
+  button {
+    position: relative;
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: baseline;
+    gap: 0.65rem;
+    padding: 1rem 0 0.9rem;
+    border: 0;
+    background: transparent;
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    font-weight: 620;
+    cursor: pointer;
+  }
+
+  button::after {
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    background: var(--color-heading);
+    content: '';
+    opacity: 0;
+    transform: scaleX(0.5);
+    transition:
+      opacity 180ms var(--ease-out),
+      transform 180ms var(--ease-out);
+  }
+
+  button > span {
     color: var(--color-muted);
     font-family: var(--font-mono), monospace;
-    font-size: 0.66rem;
+    font-size: 0.72rem;
+    font-weight: 500;
   }
-  h2 {
-    margin: 0;
-    font-size: 1.8rem;
-    letter-spacing: -0.04em;
+
+  button:hover,
+  button.active {
+    color: var(--color-heading);
   }
-  p {
-    margin: 0.4rem 0 0;
-    color: var(--color-muted);
-    font-size: 0.8rem;
+
+  button.active::after {
+    opacity: 1;
+    transform: scaleX(1);
   }
 }
 
-.workbench-taxonomy__fields {
+.workbench-taxonomy__create.ant-btn {
+  align-self: center;
+  flex: 0 0 auto;
+}
+
+.workbench-taxonomy__workspace {
+  max-width: 72rem;
+
+  > section[hidden] {
+    display: none;
+  }
+}
+
+.workbench-taxonomy__modal-fields {
   display: grid;
-  grid-template-columns: 1fr 1fr 5rem 6rem;
-  gap: 0.7rem;
-  &--tag {
-    grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+
+  .ant-input-number {
+    width: 100%;
   }
 }
 
-.workbench-taxonomy__form-actions {
-  display: flex;
-  gap: 0.6rem;
-  margin-bottom: 2rem;
+.workbench-taxonomy__modal {
+  .ant-modal-title {
+    color: var(--color-heading);
+    font-size: 1.25rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  .ant-modal-body {
+    padding-top: 0.75rem;
+  }
 }
+
 .workbench-taxonomy__items {
-  border-top: 1px solid var(--color-line-strong);
+  max-width: 72rem;
+
   article {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 1rem 0;
+    padding: 1.15rem 0;
     border-bottom: 1px solid var(--color-line);
   }
+
   article > div:first-child {
     display: grid;
+    gap: 0.25rem;
   }
+
+  strong {
+    color: var(--color-heading);
+    font-size: 1.125rem;
+    font-weight: 620;
+    line-height: 1.35;
+  }
+
   span {
     color: var(--color-muted);
     font-family: var(--font-mono), monospace;
-    font-size: 0.62rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
   }
+
   button {
     margin-left: 0.75rem;
-    padding: 0;
+    padding: 0.35rem 0;
     border: 0;
     border-bottom: 1px solid transparent;
     background: transparent;
     color: var(--color-muted);
     font-family: var(--font-mono), monospace;
-    font-size: 0.62rem;
+    font-size: 0.875rem;
     cursor: pointer;
   }
   button:hover {
@@ -683,16 +751,6 @@
   .workbench-page {
     padding-block: 2.5rem 3.5rem;
   }
-  .workbench-heading {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding-bottom: 2.5rem;
-  }
-  .workbench-primary-link {
-    justify-content: space-between;
-    min-width: 9rem;
-  }
 
   .workbench-filter {
     overflow-x: auto;
@@ -751,20 +809,25 @@
     overflow-x: auto;
     flex-wrap: nowrap;
   }
-  .workbench-taxonomy__grid {
-    grid-template-columns: 1fr;
-  }
-  .workbench-taxonomy__fields {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 @container workbench (max-width: 35rem) {
   .workbench-page {
     padding-inline: 0.9rem;
   }
-  .workbench-heading h1 {
-    font-size: clamp(2.25rem, 10vw, 2.75rem);
+  .workbench-taxonomy__bar {
+    gap: 0.75rem;
+  }
+  .workbench-taxonomy__tabs {
+    gap: 1.1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .workbench-taxonomy__tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .workbench-library__bar {
+    gap: 0.75rem;
   }
   .workbench-edit-actions {
     margin-inline: -0.9rem;
@@ -774,8 +837,12 @@
   .workbench-edit-actions > div:nth-child(2) > button:not(:last-child) {
     display: none;
   }
-  .workbench-taxonomy__fields {
-    grid-template-columns: 1fr;
+  .workbench-taxonomy__items article {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .workbench-taxonomy__items article > div:last-child {
+    margin-left: -0.75rem;
   }
   .workbench-recovery {
     align-items: flex-start;
@@ -785,6 +852,10 @@
 
 // 仅在真实手机视口提供底部保存入口；中窄屏保留顶部保存栏以避免重复操作。
 @media (max-width: 560px) {
+  .workbench-taxonomy__modal-fields {
+    grid-template-columns: 1fr;
+  }
+
   .workbench-mobile-save {
     position: fixed;
     z-index: 45;
@@ -802,7 +873,7 @@
   .workbench-skeleton span {
     animation: none;
   }
-  .workbench-primary-link {
+  .workbench-library__create {
     transition: none;
   }
 }

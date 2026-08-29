@@ -101,7 +101,7 @@
   min-height: 480px;
   overflow: hidden;
   border-radius: var(--media-radius);
-  background: #e7e8e5;
+  background: var(--color-surface);
   isolation: isolate;
 
   &__poster,
@@ -134,7 +134,7 @@
     margin: 0;
     padding: 8px 12px;
     border-radius: 999px;
-    background: rgb(241 242 239 / 88%);
+    background: rgb(255 255 255 / 90%);
     color: var(--color-muted);
     font-size: 12px;
   }

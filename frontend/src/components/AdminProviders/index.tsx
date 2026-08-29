@@ -23,22 +23,22 @@ export default function AdminProviders({ children }: { children: ReactNode }) {
         theme={{
           token: {
             // Ant Design 会对主题色做派生计算，使用 CSS 变量会使浮层颜色回退为黑色。
-            colorBgBase: '#f1f2ef',
-            colorBgContainer: '#f8f9f6',
-            colorBgElevated: '#f8f9f6',
-            colorBorder: '#d8dad6',
-            colorLink: '#121311',
-            colorPrimary: '#121311',
-            colorPrimaryBg: '#e0e2de',
-            colorPrimaryBgHover: '#d8dad6',
-            colorText: '#252824',
-            colorTextDescription: '#656a63',
+            colorBgBase: '#ffffff',
+            colorBgContainer: '#ffffff',
+            colorBgElevated: '#ffffff',
+            colorBorder: '#dfe1e5',
+            colorLink: '#111111',
+            colorPrimary: '#111111',
+            colorPrimaryBg: '#eceef1',
+            colorPrimaryBgHover: '#e2e5e9',
+            colorText: '#262626',
+            colorTextDescription: '#686868',
             borderRadius: 8,
           },
           components: {
             Select: {
-              optionActiveBg: '#e9ebe7',
-              optionSelectedBg: '#e0e2de',
+              optionActiveBg: '#f6f7f8',
+              optionSelectedBg: '#eceef1',
             },
           },
         }}

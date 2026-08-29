@@ -34,31 +34,6 @@ export default function DocsPortal({ documents }: { documents: DocumentRecord[] 
       tableOfContent={{ enabled: false }}
       tableOfContentPopover={{ enabled: false }}
     >
-      <header className="docs-portal__hero">
-        <div className="docs-portal__intro">
-          <p>Engineering field notes / 2026</p>
-          <h1>把实现过程，整理成下一次能直接找到的答案。</h1>
-          <span>
-            这里记录 Next.js、实时图形和交互工程中的具体取舍。内容由管理后台与数据库统一维护，
-            搜索、分类和首页预览共享同一份公开数据源。
-          </span>
-        </div>
-        <dl className="docs-portal__ledger" aria-label="文档概览">
-          <div>
-            <dt>Notes</dt>
-            <dd>{String(documents.length).padStart(2, '0')}</dd>
-          </div>
-          <div>
-            <dt>Tracks</dt>
-            <dd>{String(categories.length).padStart(2, '0')}</dd>
-          </div>
-          <div>
-            <dt>Updated</dt>
-            <dd>{formatShortDate(recent[0]?.updatedAt || new Date().toISOString())}</dd>
-          </div>
-        </dl>
-      </header>
-
       {lead && (
         <section className="docs-portal__latest" aria-labelledby="latest-notes-title">
           <header>

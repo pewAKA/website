@@ -1,25 +1,26 @@
 :root {
   color-scheme: light;
-  --color-page-bg: #f1f2ef;
-  --color-surface: #e5e7e3;
-  --color-surface-muted: #e9ebe7;
-  --color-surface-strong: #f8f9f6;
+  /* 浅色页面使用纯白基底，中性灰只承担层级与交互反馈。 */
+  --color-page-bg: #ffffff;
+  --color-surface: #f2f3f5;
+  --color-surface-muted: #f6f7f8;
+  --color-surface-strong: #fafafa;
   --color-surface-clear: transparent;
-  --color-heading: #121311;
-  --color-text: #252824;
-  --color-muted: #656a63;
-  --color-primary: #121311;
-  --color-primary-soft: #e0e2de;
-  --color-primary-hover: #d8dad6;
+  --color-heading: #111111;
+  --color-text: #262626;
+  --color-muted: #686868;
+  --color-primary: #111111;
+  --color-primary-soft: #eceef1;
+  --color-primary-hover: #e2e5e9;
   --color-accent: #2856d8;
   --color-accent-soft: rgb(40 86 216 / 14%);
-  --color-line: rgb(18 19 17 / 12%);
-  --color-line-strong: rgb(18 19 17 / 24%);
-  --color-grid: rgb(18 19 17 / 5%);
-  --color-shadow: rgb(33 38 31 / 13%);
-  --color-shadow-soft: rgb(33 38 31 / 7%);
-  --color-on-primary: #f7f8f5;
-  --color-on-primary-muted: rgb(247 248 245 / 72%);
+  --color-line: rgb(17 17 17 / 10%);
+  --color-line-strong: rgb(17 17 17 / 18%);
+  --color-grid: rgb(17 17 17 / 4%);
+  --color-shadow: rgb(0 0 0 / 12%);
+  --color-shadow-soft: rgb(0 0 0 / 6%);
+  --color-on-primary: #ffffff;
+  --color-on-primary-muted: rgb(255 255 255 / 72%);
   --layout-max-width: 1440px;
   --layout-content-inset: 64px;
   --layout-card-gap: 20px;
@@ -121,7 +122,7 @@ body > main,
 
 ::selection {
   background: var(--color-accent);
-  color: #f7f8f5;
+  color: #ffffff;
 }
 
 @media (prefers-reduced-motion: reduce) {

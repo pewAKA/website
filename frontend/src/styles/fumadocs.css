@@ -4,19 +4,19 @@
 
 /* Fumadocs 保留 fd 前缀，不把 Tailwind 作为主站的新样式体系。 */
 :root {
-  --color-fd-background: #f1f2ef;
-  --color-fd-foreground: #252824;
-  --color-fd-muted: #e9ebe7;
-  --color-fd-muted-foreground: #656a63;
-  --color-fd-popover: #f8f9f6;
-  --color-fd-popover-foreground: #252824;
-  --color-fd-card: #e5e7e3;
-  --color-fd-card-foreground: #121311;
-  --color-fd-border: rgb(18 19 17 / 14%);
-  --color-fd-primary: #121311;
-  --color-fd-primary-foreground: #f7f8f5;
-  --color-fd-secondary: #e5e7e3;
-  --color-fd-secondary-foreground: #252824;
+  --color-fd-background: #ffffff;
+  --color-fd-foreground: #262626;
+  --color-fd-muted: #f6f7f8;
+  --color-fd-muted-foreground: #686868;
+  --color-fd-popover: #ffffff;
+  --color-fd-popover-foreground: #262626;
+  --color-fd-card: #f2f3f5;
+  --color-fd-card-foreground: #111111;
+  --color-fd-border: rgb(17 17 17 / 12%);
+  --color-fd-primary: #111111;
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-secondary: #f2f3f5;
+  --color-fd-secondary-foreground: #262626;
   --color-fd-accent: rgb(40 86 216 / 12%);
   --color-fd-accent-foreground: #2047b6;
   --color-fd-ring: #2856d8;
@@ -52,8 +52,7 @@
 
 .lynco-docs-shell {
   min-height: 100dvh;
-  background:
-    radial-gradient(circle at 72% 8%, rgb(40 86 216 / 7%), transparent 25rem), var(--color-page-bg);
+  background: var(--color-page-bg);
 }
 
 .lynco-docs-shell [data-search-full] {

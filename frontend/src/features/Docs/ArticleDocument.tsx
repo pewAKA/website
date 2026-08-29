@@ -8,11 +8,7 @@ import {
 } from 'fumadocs-ui/layouts/docs/page'
 import Link from 'next/link'
 import { getDocsMdxComponents } from '@/components/DocsMdx'
-import {
-  getCategoryHref,
-  getDocumentCategory,
-  getTagHref,
-} from '@/lib/docs/repository'
+import { getCategoryHref, getDocumentCategory, getTagHref } from '@/lib/docs/repository'
 import type { DocumentRecord } from '@/lib/docs/types'
 
 const compiler = createCompiler()
@@ -41,7 +37,12 @@ export async function ArticleDocument({
     document.categoryName || getDocumentCategory(document.category)?.name || document.category
 
   return (
-    <DocsPage className="docs-article" toc={toc}>
+    <DocsPage
+      breadcrumb={{ enabled: false }}
+      className="docs-article"
+      tableOfContent={{ container: { className: 'docs-article__toc' } }}
+      toc={toc}
+    >
       {preview && (
         <div className="docs-preview-banner" role="status">
           <div>
@@ -60,7 +61,9 @@ export async function ArticleDocument({
       <DocsDescription>{document.description}</DocsDescription>
       <div className="docs-article__tags" aria-label="文章标签">
         {document.tags.map((tag) => (
-          <Link href={getTagHref(tag)} key={tag}>#{tag}</Link>
+          <Link href={getTagHref(tag)} key={tag}>
+            #{tag}
+          </Link>
         ))}
       </div>
       <DocsBody className="docs-article__body">

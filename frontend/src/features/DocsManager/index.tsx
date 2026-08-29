@@ -69,7 +69,6 @@ export function DocsWorkbenchShell({ children }: { children: ReactNode }) {
         <div>
           <span className="workbench-shell__signal" />
           <strong>文档工作台</strong>
-          <small>仅管理员可见</small>
         </div>
         <nav aria-label="文档工作台导航">
           <Link className={pathname === '/articles/manage' ? 'active' : ''} href="/articles/manage">
@@ -130,32 +129,26 @@ export function DocsArticleLibrary() {
   const result = articlesQuery.data
   return (
     <main className="workbench-page workbench-library">
-      <header className="workbench-heading">
-        <div>
-          <p>Document inventory / {result?.total ?? 0}</p>
-          <h1>文章库</h1>
-          <span>草稿只存在于工作台；发布后才进入文档树、搜索与 sitemap。</span>
+      <div className="workbench-library__bar">
+        <div className="workbench-filter" role="group" aria-label="文章状态筛选">
+          {[
+            ['', '全部'],
+            ['DRAFT', '草稿'],
+            ['PUBLISHED', '已发布'],
+          ].map(([value, label]) => (
+            <button
+              className={status === value ? 'active' : ''}
+              key={value}
+              type="button"
+              onClick={() => setStatus(value)}
+            >
+              {label}
+            </button>
+          ))}
         </div>
-        <Link className="workbench-primary-link" href="/articles/manage/new">
-          新建草稿 <span>↗</span>
+        <Link className="workbench-library__create" href="/articles/manage/new">
+          新建草稿
         </Link>
-      </header>
-
-      <div className="workbench-filter" role="group" aria-label="文章状态筛选">
-        {[
-          ['', '全部'],
-          ['DRAFT', '草稿'],
-          ['PUBLISHED', '已发布'],
-        ].map(([value, label]) => (
-          <button
-            className={status === value ? 'active' : ''}
-            key={value}
-            type="button"
-            onClick={() => setStatus(value)}
-          >
-            {label}
-          </button>
-        ))}
       </div>
 
       {articlesQuery.isPending && <LibrarySkeleton />}
